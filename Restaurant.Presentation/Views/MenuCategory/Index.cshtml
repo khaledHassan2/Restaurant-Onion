@@ -1,0 +1,102 @@
+﻿@using Restaurant.DTOs.MenuCategoryDTOs
+@model List<GetAllMenuCategoryDTO>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="text-center">
+    <h1>Category</h1>
+    <span>-----------------</span>
+    <br />
+    <span>---------</span>
+</div>
+<a class="btn btn-outline-success mb-5 fs-3 p-2" asp-action="Create">Add MenuCategory</a>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill"></i> @ViewBag.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<table class="table table-bordered table-hover">
+    <thead class="text-center fs-2">
+        <tr>
+            <td>Name</td>
+            @* <td>IsActive</td> *@
+            <td>Action</td>
+        </tr>
+
+    </thead>
+    @foreach (var emp in Model)
+    {
+        <tr>
+            <td>@emp.Name</td>
+            @* <td>@emp.IsActive</td> *@
+            <td>
+                <a class="btn btn-outline-primary m-2" href="/MenuCategory/Update/@emp.Id"> Update </a>
+                <button type="button" class="btn btn-outline-danger m-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteModal"
+                        data-empid="@emp.Id"
+                        data-empname="@emp.Name">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    }
+
+</table>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body fs-5">
+                Are you sure you want to delete <strong id="empName"></strong>?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const deleteModal = document.getElementById('deleteModal');
+
+    deleteModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const empId = button.getAttribute('data-empid');
+        const empName = button.getAttribute('data-empname');
+
+
+        const namePlaceholder = deleteModal.querySelector('#empName');
+        namePlaceholder.textContent = empName;
+
+
+        const confirmBtn = deleteModal.querySelector('#confirmDeleteBtn');
+        confirmBtn.href = `/MenuCategory/Delete/${empId}`;
+    });
+</script>
+
+
+
+
+
+
+

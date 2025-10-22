@@ -1,0 +1,73 @@
+﻿@model IEnumerable<GetAllMenuCategoryDTO>
+@using Restaurant.DTOs.MenuCategoryDTOs
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1 class="text-center mt-4">Welcome to Our Restaurant 🍽️</h1>
+<p class="text-center text-muted mb-5">Delicious meals made with love!</p>
+
+<div class="bg-light p-lg-5">
+    <div class="container-lg">
+        <form asp-action="Index" method="get" class="d-flex mb-3">
+            <input type="text" name="searchString" value="@ViewData["CurrentFilter"]"
+                   class="form-control me-2" placeholder="Search by category name..." />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+        <div class="row justify-content-center g-3">
+            @foreach (var item in Model)
+            {
+
+                @*   <div class="col-md-3 mb-4">
+                <div class="card shadow-sm h-100">
+                    <img src="@item.ImageUrl" class="card-img-top w-100" style="height:300px"  alt="@item.Name">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text text-muted">@item.Price LE</p>
+                    </div>
+                </div>
+            </div> *@
+
+                <div class="col-md-4">
+                    <div class="product-card bg-white rounded-4 shadow-sm h-100 position-relative">
+                        <span class="badge bg-danger">New</span>
+                        <a class="text-decoration-none" asp-controller="MenuItem" asp-action="Details" asp-route-id="@item.Id">
+                            <div class="overflow-hidden">
+                                <img src="@* @item.ImageUrl *@" class="product-image w-100" style="height:300px" alt="Product">
+                            </div>
+                        </a>
+                        <div class="p-4">
+                            <h5 class="fw-bold mb-3">@item.Name</h5>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-2">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                </div>
+                                <small class="text-muted">(4.5/5)</small>
+                            </div>
+                            <p class="text-muted mb-4">
+                                Experience crystal clear sound with our premium wireless headphones featuring
+                                noise cancellation.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">$@* @item.Price *@</span>
+                                <button class="btn btn-custom text-white px-4 py-2 rounded-pill">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
