@@ -20,13 +20,16 @@ namespace Restaurant.Presentation.Controllers
               _genericRepository = genericRepository;
             }
 
-            public async Task<IActionResult> Index()
-            {
-                //var cat = await _context.MenuCategories.ToListAsync();
-                //return View(cat);
-                var cat=await _menuCategoryService.GetAll();
-               return View(cat);
-            }
+        public async Task<IActionResult> Index()
+        {
+            var cat = await _menuCategoryService.GetAll();
+
+            ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            ViewBag.SuccessMessage = TempData["SuccessMessage"];
+
+            return View(cat);
+        }
+
 
         public IActionResult Create()
         {
@@ -93,11 +96,33 @@ namespace Restaurant.Presentation.Controllers
 
 
 
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //   var cat= await _menuCategoryService.GetById(id);
+        //    if (!cat.MenuItems.Any())
+        //    {
+        //        await _menuCategoryService.Delete(id);
+        //    return RedirectToAction("Index");
+        //    }
+        //    ModelState.AddModelError("","Can't Deleted this category Becaous Has MenuItem");
+        //    return RedirectToAction("Index");
+        //}
         public async Task<IActionResult> Delete(int id)
         {
-            await _menuCategoryService.Delete(id);
+            var cat = await _menuCategoryService.GetById(id);
+
+            if (cat.MenuItems == null || !cat.MenuItems.Any())
+            {
+                await _menuCategoryService.Delete(id);
+
+                TempData["SuccessMessage"] = "Category deleted successfully.";
+                return RedirectToAction("Index");
+            }
+
+            TempData["ErrorMessage"] = $"Can't delete this category because it has related MenuItems.Count ={cat.MenuItems.Count}";
             return RedirectToAction("Index");
         }
 
+
     }
-    }
+}

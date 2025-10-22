@@ -44,7 +44,7 @@ namespace Restaurant.Application.Services.MenuCategoryServices
 
         public async Task<MenuCategory> GetById(int id)
         {
-            return await _genericRepository.GetById(id); 
+            return await _genericRepository.GetById(id,query => query.Include(c => c.MenuItems));
         }
 
 

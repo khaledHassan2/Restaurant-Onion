@@ -4,6 +4,7 @@ using Restaurant.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,6 +25,10 @@ namespace Restaurant.Context
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<MenuCategory>().HasQueryFilter(c => !c.IsDeleted);
+            builder.Entity<MenuItem>().HasQueryFilter(i => !i.IsDeleted);
+            builder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);
+            builder.Entity<OrderItem>().HasQueryFilter(o => !o.IsDeleted);
             builder.Entity<MenuCategory>().HasData(
                 new MenuCategory { Id = 1, Name = "Main Dishes", IsDeleted = false },
                 new MenuCategory { Id = 2, Name = "Drinks", IsDeleted = false },

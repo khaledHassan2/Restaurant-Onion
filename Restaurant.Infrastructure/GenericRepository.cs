@@ -45,10 +45,16 @@ namespace Restaurant.Infrastructure
             return await Task.FromResult(_dbSet);
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetById(int id,Func<IQueryable<T>, IQueryable<T>> include = null)
         {
-          return  await _context.Set<T>().FindAsync(id);
+            IQueryable<T> query = _context.Set<T>();
+
+            if (include != null)
+                query = include(query);
+
+            return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
         }
+
 
         public async Task<int> SaveChangesAsync()
         {

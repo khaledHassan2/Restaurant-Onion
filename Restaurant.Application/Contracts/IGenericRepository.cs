@@ -10,7 +10,7 @@ namespace Restaurant.Application.Contracts
     public interface IGenericRepository<T> where T:ModelBase
     {
         public Task<IQueryable<T>> GetAll();
-        public Task<T> GetById(int id);
+        public Task<T> GetById(int id, Func<IQueryable<T>, IQueryable<T>> include = null);
         public Task<T> Create(T entity);
         public Task<T> Update(T entity);
         public Task<T> Delete(int id);
