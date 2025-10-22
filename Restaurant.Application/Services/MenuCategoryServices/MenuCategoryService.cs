@@ -38,7 +38,7 @@ namespace Restaurant.Application.Services.MenuCategoryServices
         {
            var item= await _genericRepository.GetById(id);
             item.IsDeleted = true;
-            await _genericRepository.Update(item);
+             _genericRepository.Update(item);
             await _genericRepository.SaveChangesAsync();
         }
 
@@ -51,12 +51,12 @@ namespace Restaurant.Application.Services.MenuCategoryServices
         public async Task Update(CreateMenuCategoryDTO entity)
         {
             var item= entity.Adapt<MenuCategory>();
-            await _genericRepository.Update(item);
+             _genericRepository.Update(item);
         }
 
         public async Task<IEnumerable<GetAllMenuCategoryDTO>> GetAll(string? searchString = null)
         {
-            var query = await _genericRepository.GetAll();
+            var query =  _genericRepository.GetAll();
 
             if (!string.IsNullOrWhiteSpace(searchString))
             {

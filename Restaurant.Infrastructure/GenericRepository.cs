@@ -3,9 +3,7 @@ using Restaurant.Application.Contracts;
 using Restaurant.Context;
 using Restaurant.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Restaurant.Infrastructure
@@ -23,31 +21,31 @@ namespace Restaurant.Infrastructure
 
         public async Task<T> Create(T entity)
         {
-          return  (await _context.AddAsync(entity)).Entity;
+            return (await _dbSet.AddAsync(entity)).Entity;
         }
 
         public async Task<T> Delete(int id)
         {
-            var item = await _context.Set<T>().FindAsync(id);
+            var item = await _dbSet.FindAsync(id);
             if (item == null)
                 return null;
 
             item.IsDeleted = true;
-            _context.Update(item);
+            _dbSet.Update(item);
             await _context.SaveChangesAsync();
 
             return item;
         }
 
-
-        public async Task<IQueryable<T>> GetAll()
+        // ✅ غير async لأننا مش محتاجين await هنا
+        public IQueryable<T> GetAll()
         {
-            return await Task.FromResult(_dbSet);
+            return _dbSet.Where(e => !e.IsDeleted);
         }
 
-        public async Task<T> GetById(int id,Func<IQueryable<T>, IQueryable<T>> include = null)
+        public async Task<T> GetById(int id, Func<IQueryable<T>, IQueryable<T>> include = null)
         {
-            IQueryable<T> query = _context.Set<T>();
+            IQueryable<T> query = _dbSet;
 
             if (include != null)
                 query = include(query);
@@ -55,15 +53,15 @@ namespace Restaurant.Infrastructure
             return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
         }
 
-
         public async Task<int> SaveChangesAsync()
         {
-           return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
 
-        public async Task<T> Update(T entity)
+        // ✅ مش async لأن مفيش await
+        public T Update(T entity)
         {
-            return await Task.FromResult(_context.Update(entity).Entity);
+            return _dbSet.Update(entity).Entity;
         }
     }
 }

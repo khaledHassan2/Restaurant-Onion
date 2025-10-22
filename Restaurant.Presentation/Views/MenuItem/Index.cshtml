@@ -1,0 +1,110 @@
+﻿@using Restaurant.DTOs.MenuItemDTOs
+@model List<GetAllMenuItemDTO>
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="text-center">
+    <h1 class="text-center mt-5">SowAll</h1>
+    <span>-----------------</span>
+    <br />
+    <span>---------</span>
+</div>
+@using (Html.BeginForm("Index", "MenuItem", FormMethod.Get))
+{
+    <p>
+        Search by name:
+        <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control d-inline-block" style="width:250px;" />
+        <input type="submit" value="Search" class="btn btn-primary ms-2" />
+    </p>
+}
+<a class="btn btn-outline-success mb-5 fs-3 p-2" asp-action="Create">Create MenuItem</a>
+
+<div class="row">
+    <div class="col-12 col-lg-12">
+        <table class="table table-bordered table-hover">
+            <thead class="text-center">
+                <tr>
+                    <td>Name</td>
+                    <td>Price</td>
+                    <td>TimeMinutes</td>
+                    <td>OrderCount</td>
+                    <td>Image</td>
+                    <td>Category</td>
+                    <td>Action</td>
+                </tr>
+
+            </thead>
+
+            <table-header></table-header>
+
+            @foreach (var emp in Model)
+            {
+                <tr>
+                    <td>@emp.Name</td>
+                    <td>@emp.Price</td>
+                    <td>@emp.PreparationTime <span class="text-primary"> -ms </span> </td>
+                    <td>@emp.DailyOrderCount</td>
+                    <td><img src="@emp.ImageUrl" class="w-100" style="height:50px" /> </td>
+                    <td>@emp.Category.Name</td>
+                    <td>
+                        <a class="btn btn-outline-warning m-2" href="/MenuItem/Details/@emp.Id">Details</a>
+                        <a class="btn btn-outline-primary m-2" href="/MenuItem/Edit/@emp.Id"> Update </a>
+                        @* <a class="btn btn-outline-danger mx-2" href="/Employee/Delete/@emp.Id"> Delete </a> *@
+                        <button type="button" class="btn btn-outline-danger m-2"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                                data-empid="@emp.Id"
+                                data-empname="@emp.Name">
+                            Delete
+                        </button>
+
+
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body fs-5">
+                Are you sure you want to delete <strong id="empName"></strong>?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const deleteModal = document.getElementById('deleteModal');
+
+    deleteModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const empId = button.getAttribute('data-empid');
+        const empName = button.getAttribute('data-empname');
+
+
+        const namePlaceholder = deleteModal.querySelector('#empName');
+        namePlaceholder.textContent = empName;
+
+
+        const confirmBtn = deleteModal.querySelector('#confirmDeleteBtn');
+        confirmBtn.href = `/MenuItem/Delete/${empId}`;
+    });
+</script>
+
+
+
+
+

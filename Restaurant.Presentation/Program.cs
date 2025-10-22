@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Restaurant.Application.Contracts;
 using Restaurant.Application.Services.MenuCategoryServices;
+using Restaurant.Application.Services.MenuItemServices;
 using Restaurant.Context;
 using Restaurant.Infrastructure;
 using Restaurant.Models;
@@ -39,6 +40,8 @@ namespace Restaurant.Presentation
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IMenuCategoryService, MenuCategoryService>();
+            builder.Services.AddScoped<IMenuItemService, MenuItemService>();
+
 
             builder.Services.AddControllersWithViews();
 

@@ -89,7 +89,7 @@ namespace Restaurant.Presentation.Controllers
             old.Description = entity.Description;
 
 
-            await _genericRepository.Update(old);
+             _genericRepository.Update(old);
             await _genericRepository.SaveChangesAsync();
             return RedirectToAction("Index");
         }

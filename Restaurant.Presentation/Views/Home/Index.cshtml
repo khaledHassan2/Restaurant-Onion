@@ -1,5 +1,5 @@
-﻿@model IEnumerable<GetAllMenuCategoryDTO>
-@using Restaurant.DTOs.MenuCategoryDTOs
+﻿@model IEnumerable<GetAllMenuItemDTO>
+@using Restaurant.DTOs.MenuItemDTOs
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -33,7 +33,7 @@
                         <span class="badge bg-danger">New</span>
                         <a class="text-decoration-none" asp-controller="MenuItem" asp-action="Details" asp-route-id="@item.Id">
                             <div class="overflow-hidden">
-                                <img src="@* @item.ImageUrl *@" class="product-image w-100" style="height:300px" alt="Product">
+                                <img src="@item.ImageUrl" class="product-image w-100" style="height:300px" alt="Product">
                             </div>
                         </a>
                         <div class="p-4">
