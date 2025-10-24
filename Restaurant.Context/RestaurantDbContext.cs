@@ -29,6 +29,17 @@ namespace Restaurant.Context
             builder.Entity<MenuItem>().HasQueryFilter(i => !i.IsDeleted);
             builder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);
             builder.Entity<OrderItem>().HasQueryFilter(o => !o.IsDeleted);
+            builder.Entity<Order>()
+                   .HasOne(o => o.Customer)
+                   .WithMany(c => c.Orders)
+                   .HasForeignKey(o => o.CustomerId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<OrderItem>()
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.Items)
+                .HasForeignKey(oi => oi.OrderId);
+
             builder.Entity<MenuCategory>().HasData(
                 new MenuCategory { Id = 1, Name = "Main Dishes", IsDeleted = false },
                 new MenuCategory { Id = 2, Name = "Drinks", IsDeleted = false },

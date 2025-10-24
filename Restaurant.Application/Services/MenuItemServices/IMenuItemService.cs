@@ -7,7 +7,7 @@ namespace Restaurant.Application.Services.MenuItemServices
 {
     public interface IMenuItemService
     {
-        Task<IEnumerable<GetAllMenuItemDTO>> GetAll(string? searchString = null);
+        Task<IEnumerable<IdentityCustomers>> GetAll(string? searchString = null);
         Task<MenuItem> GetById(int id);
         Task Create(CreateMenuItemDTO dto);
         Task Update(MenuItem entity);

@@ -5,11 +5,7 @@ namespace Restaurant.Models
 {
     public class IdentityCustomer : IdentityUser
     {
-        [Required, StringLength(100)]
-        public string UserName { get; set; }
-
-        [EmailAddress]
-        public string? Email { get; set; }
+        
 
         [Phone]
         public string? Phone { get; set; }

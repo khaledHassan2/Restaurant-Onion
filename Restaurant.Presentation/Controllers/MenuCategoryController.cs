@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Restaurant.Application.Contracts;
 using Restaurant.Application.Services.MenuCategoryServices;
@@ -8,6 +9,7 @@ using System;
 
 namespace Restaurant.Presentation.Controllers
 {
+    [Authorize]
     public class MenuCategoryController : Controller
     {
             private readonly IMenuCategoryService _menuCategoryService;

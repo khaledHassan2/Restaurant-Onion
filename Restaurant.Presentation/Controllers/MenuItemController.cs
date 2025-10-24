@@ -71,6 +71,7 @@ namespace Restaurant.Presentation.Controllers
         }
 
 
+
         public async Task<IActionResult> Edit(int id)
         {
             var item = await _menuItemService.GetById(id);
@@ -78,7 +79,7 @@ namespace Restaurant.Presentation.Controllers
                 return NotFound();
 
             
-            var model = item.Adapt<GetAllMenuItemDTO>();
+            var model = item.Adapt<IdentityCustomers>();
 
             
             var cats = await _menuCategoryService.GetAll();
@@ -90,7 +91,7 @@ namespace Restaurant.Presentation.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Edit(GetAllMenuItemDTO item)
+        public async Task<IActionResult> Edit(IdentityCustomers item)
         {
             if (!ModelState.IsValid)
             {

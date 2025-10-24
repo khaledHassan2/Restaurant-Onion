@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Restaurant.Application.Contracts;
 using Restaurant.Application.Services.MenuCategoryServices;
 using Restaurant.Application.Services.MenuItemServices;
+using Restaurant.Application.Services.OrderServices;
 using Restaurant.Context;
 using Restaurant.Infrastructure;
 using Restaurant.Models;
+using System;
 
 namespace Restaurant.Presentation
 {
@@ -23,29 +26,38 @@ namespace Restaurant.Presentation
             {
                 options.UseSqlServer(conn);
             });
+            builder.Services.AddIdentity<IdentityCustomer, IdentityRole>().AddEntityFrameworkStores<RestaurantDbContext>();
+            //builder.Services.AddIdentity<IdentityCustomer, IdentityRole>(options =>
+            //{
+            //    //options.SignIn.RequireConfirmedEmail = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireConfirmedEmail");
+            //    options.Password.RequireDigit = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireDigit");
+            //    options.Password.RequiredLength = builder.Configuration.GetValue<int>("PasswordRequirements:MinimumLength");
+            //    options.Password.RequireNonAlphanumeric = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireSpecialCharacter");
+            //    options.Password.RequireUppercase = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireUppercase");
+            //    options.Password.RequireLowercase = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireLowercase");
+            //    options.User.RequireUniqueEmail = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireUniqueEmail");
 
-            builder.Services.AddIdentity<IdentityCustomer, IdentityRole>(options =>
-            {
-                options.SignIn.RequireConfirmedEmail = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireConfirmedEmail");
-                options.Password.RequireDigit = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireDigit");
-                options.Password.RequiredLength = builder.Configuration.GetValue<int>("PasswordRequirements:MinimumLength");
-                options.Password.RequireNonAlphanumeric = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireSpecialCharacter");
-                options.Password.RequireUppercase = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireUppercase");
-                options.Password.RequireLowercase = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireLowercase");
-                options.User.RequireUniqueEmail = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireUniqueEmail");
+            //})
+                    
 
-            })
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<RestaurantDbContext>();
+            //.AddRoles<IdentityRole>()
+            //.AddEntityFrameworkStores<RestaurantDbContext>();
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IMenuCategoryService, MenuCategoryService>();
             builder.Services.AddScoped<IMenuItemService, MenuItemService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+
 
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddAntiforgery(); // لو مش موجود
+
+            builder.Services.AddSession();
 
             var app = builder.Build();
+            app.UseSession();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

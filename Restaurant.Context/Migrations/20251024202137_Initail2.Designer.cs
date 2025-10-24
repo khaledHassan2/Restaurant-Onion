@@ -12,8 +12,8 @@ using Restaurant.Context;
 namespace Restaurant.Context.Migrations
 {
     [DbContext(typeof(RestaurantDbContext))]
-    [Migration("20251022083024_initail")]
-    partial class initail
+    [Migration("20251024202137_Initail2")]
+    partial class Initail2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -214,6 +214,9 @@ namespace Restaurant.Context.Migrations
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -424,10 +427,7 @@ namespace Restaurant.Context.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CustomerId1")
+                    b.Property<string>("CustomerId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DeliveryAddress")
@@ -459,7 +459,7 @@ namespace Restaurant.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId1");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Orders");
                 });
@@ -575,7 +575,8 @@ namespace Restaurant.Context.Migrations
                 {
                     b.HasOne("Restaurant.Models.IdentityCustomer", "Customer")
                         .WithMany("Orders")
-                        .HasForeignKey("CustomerId1");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
                 });

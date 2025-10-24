@@ -18,7 +18,7 @@ namespace Restaurant.Application.Services.MenuItemServices
             _menuItemRepo = menuItemRepo;
         }
 
-        public async Task<IEnumerable<GetAllMenuItemDTO>> GetAll(string? search = null)
+        public async Task<IEnumerable<IdentityCustomers>> GetAll(string? search = null)
         {
             var query =  _menuItemRepo.GetAll(); 
             query = query.Include(m => m.Category); 
@@ -26,7 +26,7 @@ namespace Restaurant.Application.Services.MenuItemServices
             if (!string.IsNullOrWhiteSpace(search))
                 query = query.Where(m => m.Name.Contains(search));
 
-            return await query.ProjectToType<GetAllMenuItemDTO>().ToListAsync();
+            return await query.ProjectToType<IdentityCustomers>().ToListAsync();
         }
 
         public async Task<MenuItem> GetById(int id)

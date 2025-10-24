@@ -1,6 +1,8 @@
 ﻿using Mapster;
 using Restaurant.DTOs.MenuCategoryDTOs;
 using Restaurant.DTOs.MenuItemDTOs;
+using Restaurant.DTOs.OrderDTOs;
+using Restaurant.DTOs.UsersDTOs;
 using Restaurant.Models;
 using System;
 using System.Collections.Generic;
@@ -18,12 +20,16 @@ namespace Restaurant.Application.Mapster
             TypeAdapterConfig<MenuCategory, GetAllMenuCategoryDTO>.NewConfig().TwoWays();
 
             // MenuItem Mappings
-            TypeAdapterConfig<MenuItem, GetAllMenuItemDTO>.NewConfig().TwoWays();
+            TypeAdapterConfig<MenuItem, IdentityCustomers>.NewConfig().TwoWays();
+            TypeAdapterConfig<Order, CreateOrderDTO>.NewConfig().TwoWays();
+            TypeAdapterConfig<IdentityCustomer, RegisterUserDTO>.NewConfig().TwoWays();
+
+
             //  .Map(dest => dest.Name, src => $"Category Name: {src.Name}");
             //    .Map(dest => dest.ParentName_En, src => src.ParentCategory.Name_En);
             //TypeAdapterConfig<Category, CreateCategoryDTO>.NewConfig().TwoWays();
 
-           
+
 
         }
     }

@@ -30,9 +30,18 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="MenuItem" asp-action="Index">MenuItem</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="Index">Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="Cart">Cart</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                   
+                        <a class="btn btn-outline-danger" asp-area="" asp-controller="Account" asp-action="LogOut">LogOut</a>
+                    
                 </div>
             </div>
         </nav>

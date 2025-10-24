@@ -20,11 +20,11 @@ namespace Restaurant.Models
 
         public DateTime? LastStatusChange { get; set; }
 
-      
-        public int? CustomerId { get; set; }
+
+        [ForeignKey(nameof(Customer))]
+        public string? CustomerId { get; set; }
         public IdentityCustomer? Customer { get; set; }
 
-       
         [NotMapped]
         public decimal Subtotal => Items?.Sum(i => i.Subtotal) ?? 0;
 
@@ -33,6 +33,7 @@ namespace Restaurant.Models
 
         [NotMapped]
         public decimal Total => Math.Round(Subtotal + Tax - Discount, 2);
+
     }
 
 }

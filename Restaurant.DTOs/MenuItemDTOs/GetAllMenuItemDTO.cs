@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Restaurant.DTOs.MenuItemDTOs
 {
-    public class GetAllMenuItemDTO
+    public class IdentityCustomers
     {
         public int Id { get; set; }
 

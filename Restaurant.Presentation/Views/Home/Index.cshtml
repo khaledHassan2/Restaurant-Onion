@@ -1,73 +1,110 @@
-﻿@model IEnumerable<GetAllMenuItemDTO>
+﻿@model IEnumerable<IdentityCustomers>
 @using Restaurant.DTOs.MenuItemDTOs
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<h1 class="text-center mt-4">Welcome to Our Restaurant 🍽️</h1>
-<p class="text-center text-muted mb-5">Delicious meals made with love!</p>
+<div class="text-center mt-4">
+    <h1 class="fw-bold">Welcome to Our Restaurant 🍽️</h1>
+    <p class="text-muted mb-5">Delicious meals made with love — taste the difference!</p>
+</div>
 
-<div class="bg-light p-lg-5">
-    <div class="container-lg">
-        <form asp-action="Index" method="get" class="d-flex mb-3">
-            <input type="text" name="searchString" value="@ViewData["CurrentFilter"]"
-                   class="form-control me-2" placeholder="Search by category name..." />
-            <button type="submit" class="btn btn-primary">Search</button>
-        </form>
-        <div class="row justify-content-center g-3">
-            @foreach (var item in Model)
+<div class="container-lg bg-light p-lg-5 rounded-4 shadow-sm">
+    <!-- 🔍 Search -->
+    <form asp-action="Index" method="get" class="d-flex mb-4 justify-content-center">
+        <input type="text" name="searchString" value="@ViewData["CurrentFilter"]"
+               class="form-control w-50 me-2 shadow-sm" placeholder="Search meals or categories..." />
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-search"></i> Search
+        </button>
+    </form>
+
+    <!-- 🍔 Menu Items -->
+    <div class="row justify-content-center g-4">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
             {
+                <div class="col-md-4 col-lg-3">
+                    <div class="card product-card shadow-sm border-0 rounded-4 h-100">
+                        <div class="position-relative overflow-hidden rounded-top-4">
+                            <img src="@item.ImageUrl" alt="@item.Name"
+                                 class="w-100" style="height:250px; object-fit:cover;">
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">New</span>
+                        </div>
 
-                @*   <div class="col-md-3 mb-4">
-                <div class="card shadow-sm h-100">
-                    <img src="@item.ImageUrl" class="card-img-top w-100" style="height:300px"  alt="@item.Name">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">@item.Name</h5>
-                        <p class="card-text text-muted">@item.Price LE</p>
-                    </div>
-                </div>
-            </div> *@
+                        <div class="card-body text-center">
+                            <h5 class="fw-bold">@item.Name</h5>
+                            @* <p class="text-muted small mb-3">@item.Description</p> *@
 
-                <div class="col-md-4">
-                    <div class="product-card bg-white rounded-4 shadow-sm h-100 position-relative">
-                        <span class="badge bg-danger">New</span>
-                        <a class="text-decoration-none" asp-controller="MenuItem" asp-action="Details" asp-route-id="@item.Id">
-                            <div class="overflow-hidden">
-                                <img src="@item.ImageUrl" class="product-image w-100" style="height:300px" alt="Product">
-                            </div>
-                        </a>
-                        <div class="p-4">
-                            <h5 class="fw-bold mb-3">@item.Name</h5>
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="me-2">
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star-half-alt text-warning"></i>
-                                </div>
+                            <div class="d-flex justify-content-center align-items-center mb-3">
+                                <span class="text-warning me-1">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                </span>
                                 <small class="text-muted">(4.5/5)</small>
                             </div>
-                            <p class="text-muted mb-4">
-                                Experience crystal clear sound with our premium wireless headphones featuring
-                                noise cancellation.
-                            </p>
+
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="price">$@* @item.Price *@</span>
-                                <button class="btn btn-custom text-white px-4 py-2 rounded-pill">
-                                    Add to Cart
-                                </button>
+                                <span class="fw-bold text-success fs-5">@item.Price.ToString("C")</span>
+                                <a asp-controller="MenuItem" asp-action="Details" asp-route-id="@item.Id"
+                                   class="btn btn-outline-primary rounded-pill px-3">
+                                    View Details
+                                </a>
                             </div>
                         </div>
-                    </div>
 
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+                      @*   <div class="card-footer bg-transparent border-0 text-center pb-3">
+                            <button asp-controller="Order" asp-action="AddToCart" asp-route-id="@item.Id" class="btn btn-custom text-white px-4 py-2 rounded-pill"
+                                    style="background-color:#ff6b35;">
+                                <i class="bi bi-cart-plus"></i> Add to Cart
+                            </button>
+                        </div> *@
+                        <button class="btn btn-success px-4 py-2 rounded-pill"
+                                onclick="addToCart(@item.Id)">
+                            <i class="bi bi-cart-plus"></i> Add to Cart
+                        </button>
+                       
+
+                    </div>
                 </div>
             }
-        </div>
+        }
+        else
+        {
+            <div class="text-center text-muted py-5">
+                <h5>No menu items found 🍽️</h5>
+            </div>
+        }
     </div>
 </div>
 
+<!-- 🔗 Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 
+
+
+<script>
+    function addToCart(menuItemId) {
+        fetch('/Order/AddToCart?menuItemId=' + menuItemId, {
+            method: 'POST',
+            headers: {
+                'RequestVerificationToken': '@Antiforgery.GetAndStoreTokens(HttpContextAccessor.HttpContext).RequestToken'
+            }
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url; // لو مش مسجل دخول
+            } else {
+                alert("Item added to cart!");
+            }
+        });
+    }
+</script>
 
