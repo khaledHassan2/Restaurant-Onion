@@ -15,8 +15,11 @@ namespace Restaurant.Application.Services.OrderServices
         Task<IEnumerable<Order>> GetAll(string? searchString = null);
         Task<Order> GetById(int id);
         Task Create(CreateOrderDTO dto);
+        Task Create(Order dto);
         Task Update(CreateOrderDTO entity);
+        Task Update(Order entity);
         Task Delete(int id);
         Task<int> SaveChangesAsync();
+        Task<Order?> GetPendingOrderWithItemsAsync(string customerId);
     }
 }

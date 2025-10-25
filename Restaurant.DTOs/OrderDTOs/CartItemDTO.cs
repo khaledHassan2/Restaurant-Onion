@@ -8,7 +8,8 @@ namespace Restaurant.DTOs.OrderDTOs
 {
     public class CartItemDTO
     {
-       
+
+            public int OrderItemId { get; set; } // <-- جديد
             public int MenuItemId { get; set; }
             public string MenuItemName { get; set; }
             public decimal UnitPrice { get; set; }

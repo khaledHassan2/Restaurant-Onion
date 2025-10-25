@@ -51,10 +51,25 @@ namespace Restaurant.Application.Services.OrderServices
            _menuItemRepo.Update(order);
             await _menuItemRepo.SaveChangesAsync();
         }
+        public async Task Update(Order entity)
+        {
+            _menuItemRepo.Update(entity);
+            await _menuItemRepo.SaveChangesAsync();
+        }
 
         public async Task<int> SaveChangesAsync()
         {
            return await _menuItemRepo.SaveChangesAsync();
+        }
+        public async Task<Order?> GetPendingOrderWithItemsAsync(string customerId)
+        {
+            return await _menuItemRepo.GetPendingOrderWithItemsAsync(customerId);
+        }
+
+        public async Task Create(Order dto)
+        {
+            await _menuItemRepo.Create(dto);
+            await _menuItemRepo.SaveChangesAsync();
         }
     }
 }

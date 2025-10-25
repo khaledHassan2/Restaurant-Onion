@@ -1,101 +1,335 @@
 ﻿@using Restaurant.DTOs.MenuCategoryDTOs
 @model List<GetAllMenuCategoryDTO>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Categories";
 }
 
-<div class="text-center">
-    <h1>Category</h1>
-    <span>-----------------</span>
-    <br />
-    <span>---------</span>
+<style>
+    /* Header */
+    .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 2rem 0;
+    }
+
+        .page-header h1 {
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+    /* Add Button */
+    .btn-add {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        color: white;
+        border: none;
+        padding: 0.85rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+            background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+            color: white;
+        }
+
+    /* Alerts */
+    .alert {
+        border-radius: 8px;
+        border: none;
+        margin-bottom: 2rem;
+        animation: slideDown 0.4s ease;
+    }
+
+    .alert-danger {
+        background-color: #fadbd8;
+        color: #c0392b;
+    }
+
+    .alert-success {
+        background-color: #d5f4e6;
+        color: #27ae60;
+    }
+
+    .btn-close {
+        opacity: 0.7;
+    }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
+
+    /* Table Container */
+    .table-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        overflow-x: auto;
+    }
+
+    /* Table Styling */
+    .table {
+        margin-bottom: 0;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+        .table thead {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+            .table thead th {
+                border: none;
+                padding: 1.5rem 1.2rem;
+                font-weight: 700;
+                font-size: 1rem;
+                text-align: center;
+                vertical-align: middle;
+                letter-spacing: 0.5px;
+            }
+
+        .table tbody tr {
+            border-bottom: 2px solid #ecf0f1;
+            transition: all 0.3s ease;
+        }
+
+            .table tbody tr:hover {
+                background: linear-gradient(90deg, #fef5f5 0%, #fff8f8 100%);
+                box-shadow: 0 4px 12px rgba(231, 76, 60, 0.1);
+                transform: scale(1.01);
+            }
+
+        .table tbody td {
+            padding: 1.4rem 1.2rem;
+            vertical-align: middle;
+            font-size: 0.95rem;
+            color: #2c3e50;
+        }
+
+            .table tbody td:first-child {
+                font-weight: 600;
+                color: #2c3e50;
+            }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-update {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+        border: none;
+        padding: 0.65rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 0 3px 10px rgba(52, 152, 219, 0.2);
+    }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%);
+        }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        border: none;
+        padding: 0.65rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(231, 76, 60, 0.2);
+    }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+        }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #7f8c8d;
+        background: white;
+        border-radius: 10px;
+    }
+
+        .empty-state h5 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+    /* Modal */
+    .modal-header {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        border: none;
+    }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+    .modal-body {
+        padding: 2rem;
+        color: #2c3e50;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #ecf0f1;
+        padding: 1.5rem;
+    }
+
+        .modal-footer .btn {
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .modal-footer .btn-secondary {
+            background: #95a5a6;
+            border: none;
+            color: white;
+        }
+
+            .modal-footer .btn-secondary:hover {
+                background: #7f8c8d;
+            }
+
+        .modal-footer .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border: none;
+            color: white;
+        }
+
+            .modal-footer .btn-danger:hover {
+                background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            }
+
+  
+    /* Responsive */
+  
+</style>
+
+<div class="page-header">
+    <h1>Menu Categories</h1>
 </div>
-<a class="btn btn-outline-success mb-5 fs-3 p-2" asp-action="Create">Add MenuCategory</a>
 
 @if (ViewBag.ErrorMessage != null)
 {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.ErrorMessage
+        @ViewBag.ErrorMessage
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
+
 @if (ViewBag.SuccessMessage != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle-fill"></i> @ViewBag.SuccessMessage
+        @ViewBag.SuccessMessage
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<table class="table table-bordered table-hover">
-    <thead class="text-center fs-2">
-        <tr>
-            <td>Name</td>
-            @* <td>IsActive</td> *@
-            <td>Action</td>
-        </tr>
+<a class="btn-add" asp-action="Create">Add New Category</a>
 
-    </thead>
-    @foreach (var emp in Model)
-    {
-        <tr>
-            <td>@emp.Name</td>
-            @* <td>@emp.IsActive</td> *@
-            <td>
-                <a class="btn btn-outline-primary m-2" href="/MenuCategory/Update/@emp.Id"> Update </a>
-                <button type="button" class="btn btn-outline-danger m-2"
-                        data-bs-toggle="modal"
-                        data-bs-target="#deleteModal"
-                        data-empid="@emp.Id"
-                        data-empname="@emp.Name">
-                    Delete
-                </button>
-            </td>
-        </tr>
-    }
+@if (Model != null && Model.Any())
+{
+    <div class="table-container">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 70%;">Category Name</th>
+                    <th style="width: 30%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Model)
+                {
+                    <tr>
+                        <td>@category.Name</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a class="btn-update" asp-action="Update" asp-route-id="@category.Id">Update</a>
+                                <button type="button" class="btn-delete"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        data-categoryid="@category.Id"
+                                        data-categoryname="@category.Name">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="table-container">
+        <div class="empty-state">
+            <h5>No Categories Found</h5>
+            <p>Start by creating your first menu category</p>
+            <a class="btn-add" asp-action="Create">Create Category</a>
+        </div>
+    </div>
+}
 
-</table>
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
+            <div class="modal-header">
                 <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
-            <div class="modal-body fs-5">
-                Are you sure you want to delete <strong id="empName"></strong>?
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="categoryName"></strong>? This action cannot be undone.
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <a id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</a>
+                <a id="confirmDeleteBtn" class="btn btn-danger">Delete</a>
             </div>
         </div>
     </div>
 </div>
+
 <script>
     const deleteModal = document.getElementById('deleteModal');
-
     deleteModal.addEventListener('show.bs.modal', event => {
         const button = event.relatedTarget;
-        const empId = button.getAttribute('data-empid');
-        const empName = button.getAttribute('data-empname');
-
-
-        const namePlaceholder = deleteModal.querySelector('#empName');
-        namePlaceholder.textContent = empName;
-
-
+        const categoryId = button.getAttribute('data-categoryid');
+        const categoryName = button.getAttribute('data-categoryname');
+        const nameElement = deleteModal.querySelector('#categoryName');
+        nameElement.textContent = categoryName;
         const confirmBtn = deleteModal.querySelector('#confirmDeleteBtn');
-        confirmBtn.href = `/MenuCategory/Delete/${empId}`;
+        confirmBtn.href = `/MenuCategory/Delete/${categoryId}`;
     });
 </script>
-
-
-
-
-
-
-

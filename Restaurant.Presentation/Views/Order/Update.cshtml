@@ -1,83 +1,371 @@
 ﻿@model Restaurant.DTOs.OrderDTOs.CreateOrderDTO
-
 @{
-    ViewData["Title"] = "Update";
+    ViewData["Title"] = "Update Order";
 }
 
-<h1>Update</h1>
+<style>
+    .update-order-container {
+        padding: 2rem 0;
+    }
 
+    .page-title {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
 
-<div class="container mt-4">
-    <div class="card shadow-sm rounded">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">🧾 Update New Order</h4>
-        </div>
+        .page-title h1 {
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 2.2rem;
+        }
 
-        <div class="card-body">
-            <form asp-action="Update" method="post">
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        animation: slideDown 0.6s ease;
+    }
 
-                <div class="row g-3">
-                    <!-- Order Type -->
-                    <div class="col-md-6">
-                        <label asp-for="Type" class="form-label fw-semibold"></label>
-                        <select asp-for="Type" class="form-select"
-                                asp-items="Html.GetEnumSelectList<Restaurant.Models.OrderType>()">
-                            <option value="">-- Select Order Type --</option>
-                        </select>
-                        <span asp-validation-for="Type" class="text-danger"></span>
-                    </div>
+    .form-header {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+        padding: 1.5rem;
+        border-bottom: none;
+    }
 
-                    <!-- Order Status -->
-                    <div class="col-md-6">
-                        <label asp-for="Status" class="form-label fw-semibold"></label>
-                        <select asp-for="Status" class="form-select"
-                                asp-items="Html.GetEnumSelectList<Restaurant.Models.OrderStatus>()">
-                            <option value="">-- Select Status --</option>
-                        </select>
-                        <span asp-validation-for="Status" class="text-danger"></span>
-                    </div>
+        .form-header h4 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-                    <!-- Delivery Address -->
-                    <div class="col-md-12">
-                        <label asp-for="DeliveryAddress" class="form-label fw-semibold"></label>
-                        <input asp-for="DeliveryAddress" class="form-control" placeholder="Enter delivery address..." />
-                        <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
-                    </div>
+    .form-body {
+        padding: 2rem;
+    }
 
-                    <!-- Tax Percent -->
-                    <div class="col-md-4">
-                        <label asp-for="TaxPercent" class="form-label fw-semibold"></label>
-                        <input asp-for="TaxPercent" class="form-control" type="number" step="0.1" />
-                        <span asp-validation-for="TaxPercent" class="text-danger"></span>
-                    </div>
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-                    <!-- Discount -->
-                    <div class="col-md-4">
-                        <label asp-for="Discount" class="form-label fw-semibold"></label>
-                        <input asp-for="Discount" class="form-control" type="number" step="0.1" />
-                        <span asp-validation-for="Discount" class="text-danger"></span>
-                    </div>
+    .form-label {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
 
-                    <!-- Customer ID -->
-                    <div class="col-md-4">
-                        <label asp-for="CustomerId" class="form-label fw-semibold"></label>
-                        <input asp-for="CustomerId" class="form-control" placeholder="Enter customer ID" />
-                        <span asp-validation-for="CustomerId" class="text-danger"></span>
-                    </div>
+    .form-control,
+    .form-select {
+        background-color: #f8f9fa;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        padding: 0.85rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        color: #2c3e50;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #f39c12;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+        }
+
+        .form-control:disabled {
+            background-color: #ecf0f1;
+            color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        .form-select option {
+            padding: 0.5rem;
+        }
+
+    /* Validation Error */
+    .validation-error {
+        color: #e74c3c;
+        font-size: 0.875rem;
+        margin-top: 0.3rem;
+        display: block;
+    }
+
+    .validation-summary {
+        background-color: #fadbd8;
+        border: 1px solid #f5b7b1;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        color: #c0392b;
+    }
+
+        .validation-summary ul {
+            margin-bottom: 0;
+            padding-left: 1.5rem;
+        }
+
+        .validation-summary li {
+            margin-bottom: 0.5rem;
+        }
+
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+    .section-title {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            border-radius: 2px;
+        }
+
+    .grid-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Buttons */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #ecf0f1;
+    }
+
+    .btn-submit {
+        flex: 1;
+        padding: 0.85rem 2rem;
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.3);
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+        }
+
+    .btn-back {
+        flex: 1;
+        padding: 0.85rem 2rem;
+        background: white;
+        color: #95a5a6;
+        border: 2px solid #95a5a6;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+        .btn-back:hover {
+            background: #95a5a6;
+            color: white;
+            border-color: #95a5a6;
+        }
+
+    /* Info Box */
+    .info-box {
+        background: linear-gradient(135deg, #fef5f5 0%, #fff9f0 100%);
+        border-left: 4px solid #f39c12;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+
+        .info-box p {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+
+    .update-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .form-body
+
+    {
+        padding: 1.5rem;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .btn-submit,
+    .btn-back {
+        width: 100%;
+    }
+
+    .form-header h4 {
+        font-size: 1.1rem;
+    }
+
+    .grid-row {
+        grid-template-columns: 1fr;
+    }
+
+    }
+
+    @@keyframes slideDown {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+</style>
+
+<div class="update-order-container">
+    <div class="page-title">
+        <h1>Update Order</h1>
+    </div>
+
+    <div class="container">
+        <div class="form-card">
+            <div class="form-header">
+                <h4>Order Details</h4>
+            </div>
+
+            <div class="form-body">
+                <div class="update-badge">✏️ Edit Order Information</div>
+
+                <div class="info-box">
+                    <p>Modify the order details below. Customer ID cannot be changed after creation.</p>
                 </div>
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-check-circle"></i> Create Order
-                    </button>
-                    <a asp-action="Index" class="btn btn-outline-secondary ms-2 px-4">
-                        <i class="bi bi-arrow-left-circle"></i> Back to List
-                    </a>
-                </div>
-            </form>
+                <form asp-action="Update" method="post">
+                    <div asp-validation-summary="All" class="validation-summary"></div>
+
+                    <!-- Order Type & Status Section -->
+                    <div class="form-section">
+                        <div class="section-title">Order Information</div>
+                        <div class="grid-row">
+                            <div class="form-group">
+                                <label asp-for="Type" class="form-label">Order Type *</label>
+                                <select asp-for="Type" class="form-select"
+                                        asp-items="Html.GetEnumSelectList<Restaurant.Models.OrderType>()">
+                                    <option value="">-- Select Order Type --</option>
+                                </select>
+                                <span asp-validation-for="Type" class="validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Status" class="form-label">Status *</label>
+                                <select asp-for="Status" class="form-select"
+                                        asp-items="Html.GetEnumSelectList<Restaurant.Models.OrderStatus>()">
+                                    <option value="">-- Select Status --</option>
+                                </select>
+                                <span asp-validation-for="Status" class="validation-error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Section -->
+                    <div class="form-section">
+                        <div class="section-title">Delivery Information</div>
+                        <div class="form-group">
+                            <label asp-for="DeliveryAddress" class="form-label">Delivery Address *</label>
+                            <input asp-for="DeliveryAddress" class="form-control"
+                                   placeholder="Enter or update the delivery address..." />
+                            <span asp-validation-for="DeliveryAddress" class="validation-error"></span>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Section -->
+                    <div class="form-section">
+                        <div class="section-title">Pricing & Fees</div>
+                        <div class="grid-row">
+                            <div class="form-group">
+                                <label asp-for="TaxPercent" class="form-label">Tax Percent (%)</label>
+                                <input asp-for="TaxPercent" class="form-control"
+                                       type="number" step="0.1" placeholder="0.0" />
+                                <span asp-validation-for="TaxPercent" class="validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Discount" class="form-label">Discount ($)</label>
+                                <input asp-for="Discount" class="form-control"
+                                       type="number" step="0.01" placeholder="0.00" />
+                                <span asp-validation-for="Discount" class="validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="CustomerId" class="form-label">Customer ID</label>
+                                <input asp-for="CustomerId" class="form-control"
+                                       placeholder="Customer ID (Read-only)" disabled />
+                                <span asp-validation-for="CustomerId" class="validation-error"></span>
+                                <small class="text-muted d-block mt-2">Cannot be changed after order creation</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="button-group">
+                        <button type="submit" class="btn-submit">Update Order</button>
+                        <a asp-action="Index" class="btn-back">Back to Orders</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
-

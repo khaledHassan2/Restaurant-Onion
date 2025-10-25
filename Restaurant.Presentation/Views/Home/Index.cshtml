@@ -7,104 +7,310 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center mt-4">
-    <h1 class="fw-bold">Welcome to Our Restaurant 🍽️</h1>
-    <p class="text-muted mb-5">Delicious meals made with love — taste the difference!</p>
+<style>
+    /* Header Section */
+    .hero-section {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem 0;
+    }
+
+        .hero-section h1 {
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-section p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+    /* Search Bar */
+    .search-container {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .search-form {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+        .search-form input {
+            flex: 1;
+            max-width: 500px;
+            padding: 0.85rem 1rem;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+            .search-form input:focus {
+                outline: none;
+                border-color: #e74c3c;
+                box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+            }
+
+    .search-btn {
+        padding: 0.85rem 2rem;
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
+        }
+
+    /* Products Container */
+    .products-container {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Product Card */
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid #ecf0f1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+    .product-image {
+        position: relative;
+        overflow: hidden;
+        height: 250px;
+    }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.1);
+    }
+
+    .product-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .product-body {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .product-rating {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+        .product-rating .stars {
+            color: #f39c12;
+            font-size: 0.9rem;
+        }
+
+        .product-rating .score {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+        }
+
+    .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+    .product-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #27ae60;
+    }
+
+    .view-details-btn {
+        padding: 0.6rem 1.2rem;
+        background: white;
+        color: #e74c3c;
+        border: 2px solid #e74c3c;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 0.9rem;
+    }
+
+        .view-details-btn:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+    .add-to-cart-btn {
+        width: 100%;
+        padding: 0.85rem;
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+
+        .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+            background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+        }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #7f8c8d;
+    }
+
+        .empty-state h5 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+    /* Responsive */
+  
+    }
+</style>
+
+<div class="hero-section">
+    <h1>Welcome to Our Restaurant</h1>
+    <p>Delicious meals made with love — taste the difference!</p>
 </div>
 
-<div class="container-lg bg-light p-lg-5 rounded-4 shadow-sm">
-    <!-- 🔍 Search -->
-    <form asp-action="Index" method="get" class="d-flex mb-4 justify-content-center">
+<div class="search-container">
+    <form asp-action="Index" method="get" class="search-form">
         <input type="text" name="searchString" value="@ViewData["CurrentFilter"]"
-               class="form-control w-50 me-2 shadow-sm" placeholder="Search meals or categories..." />
-        <button type="submit" class="btn btn-primary px-4">
-            <i class="bi bi-search"></i> Search
-        </button>
+               placeholder="Search meals or categories..." />
+        <button type="submit" class="search-btn">Search</button>
     </form>
+</div>
 
-    <!-- 🍔 Menu Items -->
-    <div class="row justify-content-center g-4">
+<div class="products-container">
+    <div class="row g-4">
         @if (Model != null && Model.Any())
         {
             foreach (var item in Model)
             {
-                <div class="col-md-4 col-lg-3">
-                    <div class="card product-card shadow-sm border-0 rounded-4 h-100">
-                        <div class="position-relative overflow-hidden rounded-top-4">
-                            <img src="@item.ImageUrl" alt="@item.Name"
-                                 class="w-100" style="height:250px; object-fit:cover;">
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">New</span>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="@item.ImageUrl" alt="@item.Name">
+                            <span class="product-badge">New</span>
                         </div>
 
-                        <div class="card-body text-center">
-                            <h5 class="fw-bold">@item.Name</h5>
-                            @* <p class="text-muted small mb-3">@item.Description</p> *@
+                        <div class="product-body">
+                            <h5 class="product-name">@item.Name</h5>
 
-                            <div class="d-flex justify-content-center align-items-center mb-3">
-                                <span class="text-warning me-1">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-half"></i>
-                                </span>
-                                <small class="text-muted">(4.5/5)</small>
+                            <div class="product-rating">
+                                <span class="stars">★★★★☆</span>
+                                <span class="score">(4.5/5)</span>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="fw-bold text-success fs-5">@item.Price.ToString("C")</span>
+                            <div class="product-footer">
+                                <span class="product-price">@item.Price.ToString("C")</span>
                                 <a asp-controller="MenuItem" asp-action="Details" asp-route-id="@item.Id"
-                                   class="btn btn-outline-primary rounded-pill px-3">
-                                    View Details
+                                   class="view-details-btn">
+                                    View
                                 </a>
                             </div>
-                        </div>
 
-                      @*   <div class="card-footer bg-transparent border-0 text-center pb-3">
-                            <button asp-controller="Order" asp-action="AddToCart" asp-route-id="@item.Id" class="btn btn-custom text-white px-4 py-2 rounded-pill"
-                                    style="background-color:#ff6b35;">
-                                <i class="bi bi-cart-plus"></i> Add to Cart
+                            <button class="add-to-cart-btn" onclick="addToCart(@item.Id)">
+                                Add to Cart
                             </button>
-                        </div> *@
-                        <button class="btn btn-success px-4 py-2 rounded-pill"
-                                onclick="addToCart(@item.Id)">
-                            <i class="bi bi-cart-plus"></i> Add to Cart
-                        </button>
-                       
-
+                        </div>
                     </div>
                 </div>
             }
         }
         else
         {
-            <div class="text-center text-muted py-5">
-                <h5>No menu items found 🍽️</h5>
+            <div class="col-12">
+                <div class="empty-state">
+                    <h5>No menu items found</h5>
+                    <p>Check back soon for delicious meals!</p>
+                </div>
             </div>
         }
     </div>
 </div>
 
-<!-- 🔗 Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
-
-
 
 <script>
     function addToCart(menuItemId) {
-        fetch('/Order/AddToCart?menuItemId=' + menuItemId, {
+        fetch('/OrderItem/AddToCart?menuItemId=' + menuItemId, {
             method: 'POST',
             headers: {
                 'RequestVerificationToken': '@Antiforgery.GetAndStoreTokens(HttpContextAccessor.HttpContext).RequestToken'
             }
         }).then(response => {
             if (response.redirected) {
-                window.location.href = response.url; // لو مش مسجل دخول
+                window.location.href = response.url;
             } else {
-                alert("Item added to cart!");
+                alert("Item added to cart successfully!");
             }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert("Failed to add item to cart");
         });
     }
 </script>
-

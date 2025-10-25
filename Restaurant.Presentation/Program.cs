@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Restaurant.Application.Contracts;
 using Restaurant.Application.Services.MenuCategoryServices;
 using Restaurant.Application.Services.MenuItemServices;
+using Restaurant.Application.Services.OrderItemServices;
 using Restaurant.Application.Services.OrderServices;
 using Restaurant.Context;
 using Restaurant.Infrastructure;
@@ -47,6 +48,8 @@ namespace Restaurant.Presentation
             builder.Services.AddScoped<IMenuCategoryService, MenuCategoryService>();
             builder.Services.AddScoped<IMenuItemService, MenuItemService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+
 
 
 

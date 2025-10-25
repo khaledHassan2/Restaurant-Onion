@@ -1,4 +1,5 @@
-﻿using Restaurant.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Restaurant.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,5 +14,8 @@ namespace Restaurant.Application.Contracts
         T Update(T entity);
         Task<T> Delete(int id);
         Task<int> SaveChangesAsync();
+        Task<Order?> GetPendingOrderWithItemsAsync(string customerId);
+        
+
     }
 }

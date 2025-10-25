@@ -7,6 +7,7 @@ using Restaurant.Application.Services.MenuItemServices;
 using Restaurant.Application.Services.OrderServices;
 using Restaurant.DTOs.OrderDTOs;
 using Restaurant.Models;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Restaurant.Presentation.Controllers
@@ -16,7 +17,6 @@ namespace Restaurant.Presentation.Controllers
         private readonly IOrderService _orderService;
         private readonly IMenuItemService _menuItemService;
         private readonly UserManager<IdentityCustomer> _userManager;
-
         private readonly SignInManager<IdentityCustomer> _signInManager;
 
         public OrderController(IOrderService orderService, IMenuItemService menuItemService, SignInManager<IdentityCustomer> signInManager, UserManager<IdentityCustomer> userManager)
@@ -29,172 +29,101 @@ namespace Restaurant.Presentation.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var orders=await _orderService.GetAll();
+            var orders = await _orderService.GetAll();
             return View(orders);
         }
-        public IActionResult Create()
+
+        public async Task<IActionResult> Create()
         {
-            
+           var items= await _menuItemService.GetAll();
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateOrderDTO orderDTO)
         {
-            if(!ModelState.IsValid)
-            {
+            if (!ModelState.IsValid || orderDTO == null)
                 return View(orderDTO);
-            }
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            orderDTO.CustomerId = userId;
 
-            if(orderDTO == null)
-                return View(orderDTO);
-           await _orderService.Create(orderDTO);
-   
+            await _orderService.Create(orderDTO);
             return RedirectToAction("Index");
         }
+
         public async Task<IActionResult> Update(int id)
         {
-          var order=await  _orderService.GetById(id);
-            var orderdto=order.Adapt<CreateOrderDTO>();
+            var order = await _orderService.GetById(id);
+            var orderdto = order.Adapt<CreateOrderDTO>();
             return View(orderdto);
         }
+
         [HttpPost]
         public async Task<IActionResult> Update(CreateOrderDTO orderDTO)
         {
-            if (!ModelState.IsValid)
-            {
+            if (!ModelState.IsValid || orderDTO == null)
                 return View(orderDTO);
-            }
 
-            if (orderDTO == null)
-                return View(orderDTO);
             await _orderService.Update(orderDTO);
-
             return RedirectToAction("Index");
         }
+
         public async Task<IActionResult> Delete(int id)
         {
-            await  _orderService.Delete(id);
+            await _orderService.Delete(id);
             return RedirectToAction("Index");
-
         }
-        [Authorize]
+
         [HttpPost]
-        public async Task<IActionResult> AddToCart(int menuItemId)
-        {
-            var customerId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(customerId))
-            {
-                TempData["ErrorMessage"] = "Please log in to add items to your cart.";
-                return RedirectToAction("Login", "Account");
-            }
-
-            // جلب المستخدم الحالي مع Orders و Items و MenuItem
-            var customer = await _userManager.Users
-                .Include(c => c.Orders)
-                    .ThenInclude(o => o.Items)
-                        .ThenInclude(oi => oi.MenuItem)
-                .FirstOrDefaultAsync(c => c.Id == customerId);
-
-            if (customer == null)
-            {
-                TempData["ErrorMessage"] = "User not found.";
-                return RedirectToAction("Index", "MenuItem");
-            }
-
-            // جلب Pending Order أو إنشاء جديد
-            var pendingOrder = customer.Orders.FirstOrDefault(o => o.Status == OrderStatus.Pending);
-            if (pendingOrder == null)
-            {
-                pendingOrder = new Order
-                {
-                    CustomerId = customerId,
-                    Status = OrderStatus.Pending,
-                    Type = OrderType.DineIn,
-                    Discount = 0,
-                    TaxPercent = 8.5m
-                };
-
-                customer.Orders.Add(pendingOrder);
-                await _orderService.SaveChangesAsync();
-            }
-
-            // إضافة أو زيادة كمية الـ MenuItem
-            var existingItem = pendingOrder.Items.FirstOrDefault(i => i.MenuItemId == menuItemId);
-            if (existingItem != null)
-            {
-                existingItem.Quantity += 1;
-            }
-            else
-            {
-                var menuItem = await _menuItemService.GetById(menuItemId);
-                if (menuItem == null)
-                {
-                    TempData["ErrorMessage"] = "Item not found.";
-                    return RedirectToAction("Cart");
-                }
-
-                pendingOrder.Items.Add(new OrderItem
-                {
-                    MenuItemId = menuItem.Id,
-                    MenuItem = menuItem,
-                    Quantity = 1,
-                    UnitPrice = menuItem.Price
-                });
-            }
-
-            await _orderService.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Item added to cart!";
-            return RedirectToAction("Cart");
-        }
-
-        [Authorize]
-        public async Task<IActionResult> Cart()
+        public async Task<IActionResult> Checkout()
         {
             var customerId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(customerId))
             {
-                TempData["ErrorMessage"] = "Please log in to view your cart.";
+                TempData["ErrorMessage"] = "Please log in to checkout.";
                 return RedirectToAction("Login", "Account");
             }
 
-            // جلب المستخدم مع الأوردرز و Items و MenuItem
-            var customer = await _userManager.Users
-                .Include(c => c.Orders)
-                    .ThenInclude(o => o.Items)
-                        .ThenInclude(oi => oi.MenuItem)
-                .FirstOrDefaultAsync(c => c.Id == customerId);
+            // جلب الـCart الحالي (Status = Pending)
+            var cart = await _orderService.GetPendingOrderWithItemsAsync(customerId);
 
-            if (customer == null)
-            {
-                TempData["ErrorMessage"] = "User not found.";
-                return RedirectToAction("Index", "MenuItem");
-            }
-
-            // جلب الـ Pending Order الخاص بالمستخدم
-            var pendingOrder = customer.Orders.FirstOrDefault(o => o.Status == OrderStatus.Pending);
-
-            if (pendingOrder == null || pendingOrder.Items == null || !pendingOrder.Items.Any())
+            if (cart == null || cart.Items == null || !cart.Items.Any())
             {
                 TempData["InfoMessage"] = "Your cart is empty.";
-                return View(new List<CartItemDTO>());
+                return RedirectToAction("Index");
             }
 
-            // تحويل العناصر لـ DTO للعرض
-            var cartItems = pendingOrder.Items.Select(i => new CartItemDTO
+            // إنشاء Order جديد
+            var newOrder = new Order
+            {
+                CustomerId = customerId,
+                Status = OrderStatus.Ready, // أو Pending لو عايز تاكد الدفع بعدين
+                Type = cart.Type,
+                Discount = cart.Discount,
+                TaxPercent = cart.TaxPercent,
+                DeliveryAddress = cart.DeliveryAddress,
+                LastStatusChange = DateTime.Now
+            };
+
+            await _orderService.Create(newOrder);
+
+            // نسخ العناصر من الكارت إلى الـOrder الجديد
+            newOrder.Items = cart.Items.Select(i => new OrderItem
             {
                 MenuItemId = i.MenuItemId,
-                MenuItemName = i.MenuItem.Name,
+                Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
-                Quantity = i.Quantity
+                OrderId = newOrder.Id
             }).ToList();
 
-            return View(cartItems);
+            await _orderService.Update(newOrder);
+
+            // مسح الكارت الحالي بعد الشيك اوت
+            //await _orderService.ClearCart(customerId); // تأكد ان عندك method دي
+
+            TempData["SuccessMessage"] = "Checkout successful! Your cart is now empty.";
+            return RedirectToAction("Index");
         }
-
-
-
 
     }
 }

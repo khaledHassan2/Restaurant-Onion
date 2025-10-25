@@ -1,45 +1,219 @@
 ﻿@model Restaurant.DTOs.UsersDTOs.RegisterUserDTO
-
 @{
     ViewData["Title"] = "Register";
 }
 
-<h1>Register</h1>
+<style>
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+    }
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Register">
-            <div asp-validation-summary="All" class="text-danger"></div>
+    .register-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        padding: 3rem;
+        width: 100%;
+        max-width: 420px;
+        animation: slideDown 0.6s ease;
+    }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+        .register-header h2 {
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-header p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+            .form-group input[type="text"]:focus,
+            .form-group input[type="email"]:focus,
+            .form-group input[type="password"]:focus {
+                outline: none;
+                border-color: #e74c3c;
+                background-color: white;
+                box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+            }
+
+    .submit-btn {
+        width: 100%;
+        padding: 0.85rem;
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+    .validation-error {
+        color: #e74c3c;
+        font-size: 0.875rem;
+        margin-top: 0.3rem;
+        display: block;
+    }
+
+    .validation-summary {
+        background-color: #fadbd8;
+        border: 1px solid #f5b7b1;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        color: #c0392b;
+    }
+
+    .links-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #ecf0f1;
+    }
+
+        .links-container a {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+            .links-container a:hover {
+                color: #c0392b;
+                text-decoration: underline;
+            }
+
+    .signin-link {
+        text-align: center;
+        margin-top: 1rem;
+        color: #7f8c8d;
+    }
+
+        .signin-link a {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .signin-link a:hover {
+                color: #c0392b;
+                text-decoration: underline;
+            }
+
+   
+
+    .register-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .links-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+        .links-container a {
+            width: 100%;
+            text-align: center;
+        }
+
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <h2>Create Account</h2>
+            <p>Join us today</p>
+        </div>
+
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="All" class="validation-summary"></div>
+
             <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
+                <label asp-for="UserName">Username</label>
+                <input asp-for="UserName" class="form-control" placeholder="Choose a username" />
+                <span asp-validation-for="UserName" class="validation-error"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="UserEmail" class="control-label"></label>
-                <input asp-for="UserEmail" class="form-control" />
-                <span asp-validation-for="UserEmail" class="text-danger"></span>
+                <label asp-for="UserEmail">Email Address</label>
+                <input asp-for="UserEmail" class="form-control" placeholder="Enter your email" />
+                <span asp-validation-for="UserEmail" class="validation-error"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+                <label asp-for="Password">Password</label>
+                <input asp-for="Password" class="form-control" placeholder="Create a password" />
+                <span asp-validation-for="Password" class="validation-error"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="ConfirmPassword" class="control-label"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                <label asp-for="ConfirmPassword">Confirm Password</label>
+                <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm your password" />
+                <span asp-validation-for="ConfirmPassword" class="validation-error"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                Register
-            </div>
+
+            <button type="submit" class="btn btn-primary submit-btn">Create Account</button>
         </form>
+
+        <div class="signin-link">
+            Already have an account? <a asp-action="Login">Sign In</a>
+        </div>
+
+        <div class="links-container">
+            <a asp-action="Index">Back to Home</a>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index" class="btn btn-primary">Back to List</a>
-</div>
-

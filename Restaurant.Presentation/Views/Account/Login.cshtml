@@ -1,42 +1,193 @@
 ﻿@model Restaurant.DTOs.UsersDTOs.LoginUserDTO
-
 @{
     ViewData["Title"] = "Login";
 }
 
-<h1>Login</h1>
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+    }
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Login">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    .login-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        padding: 3rem;
+        width: 100%;
+        max-width: 420px;
+        animation: slideDown 0.6s ease;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+        .login-header h2 {
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+            .form-group input[type="text"]:focus,
+            .form-group input[type="password"]:focus {
+                outline: none;
+                border-color: #e74c3c;
+                background-color: white;
+                box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+            }
+
+    .form-check {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-check-input {
+        width: 1.1rem;
+        height: 1.1rem;
+        margin-top: 0.2rem;
+        cursor: pointer;
+        accent-color: #e74c3c;
+    }
+
+    .form-check-label {
+        margin-left: 0.5rem;
+        color: #555;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 0.85rem;
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+    .validation-error {
+        color: #e74c3c;
+        font-size: 0.875rem;
+        margin-top: 0.3rem;
+        display: block;
+    }
+
+    .validation-summary {
+        background-color: #fadbd8;
+        border: 1px solid #f5b7b1;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        color: #c0392b;
+    }
+
+    .links-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #ecf0f1;
+    }
+
+        .links-container a {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+            .links-container a:hover {
+                color: #c0392b;
+                text-decoration: underline;
+            }
+
+   
+
+  
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Welcome Back</h2>
+            <p>Sign in to your account</p>
+        </div>
+
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
             <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
+                <label asp-for="UserName">Username</label>
+                <input asp-for="UserName" class="form-control" placeholder="Enter your username" />
+                <span asp-validation-for="UserName" class="validation-error"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+                <label asp-for="Password">Password</label>
+                <input asp-for="Password" class="form-control" placeholder="Enter your password" />
+                <span asp-validation-for="Password" class="validation-error"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="RememberMy" /> @Html.DisplayNameFor(model => model.RememberMy)
-                </label>
+
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" asp-for="RememberMy" />
+                <label class="form-check-label" asp-for="RememberMy">Remember me</label>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-               
-            </div>
+
+            <button type="submit" class="submit-btn">Sign In</button>
         </form>
+
+        <div class="links-container">
+            <a asp-action="Register">Create new account</a>
+            <a asp-action="Index">Back to Home</a>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-    <a asp-action="Register">Register</a>
-
-</div>
-

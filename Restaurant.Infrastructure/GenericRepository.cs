@@ -54,6 +54,16 @@ namespace Restaurant.Infrastructure
             return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
         }
 
+       
+        public async Task<Order?> GetPendingOrderWithItemsAsync(string customerId)
+        {
+            return await _context.Orders
+                .Include(o => o.Items)
+                    .ThenInclude(oi => oi.MenuItem)
+                .FirstOrDefaultAsync(o => o.CustomerId == customerId && o.Status == OrderStatus.Pending);
+        }
+
+
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
