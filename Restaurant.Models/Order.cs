@@ -33,6 +33,8 @@ namespace Restaurant.Models
 
         [NotMapped]
         public decimal Total => Math.Round(Subtotal + Tax - Discount, 2);
+        [NotMapped]
+        public decimal? TotalAmount { get; set; }
 
     }
 

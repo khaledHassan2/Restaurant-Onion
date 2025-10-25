@@ -35,7 +35,13 @@ namespace Restaurant.Presentation.Controllers
 
         public async Task<IActionResult> Create()
         {
-           var items= await _menuItemService.GetAll();
+
+            var currentHour = DateTime.Now.Hour;
+            if (currentHour >= 15 && currentHour < 17)
+            {
+                ViewBag.HappyHourMessage = "Happy Hour! Get 20% off your order (3 PM - 5 PM)";
+            }
+            var items= await _menuItemService.GetAll();
             return View();
         }
 
@@ -46,7 +52,14 @@ namespace Restaurant.Presentation.Controllers
                 return View(orderDTO);
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             orderDTO.CustomerId = userId;
+            var currentHour = DateTime.Now.Hour;
+            if (currentHour >= 15 && currentHour < 17)
+            {
+                orderDTO.Discount = (orderDTO.Discount) - (orderDTO.Discount * 20/100);
+                await _orderService.Create(orderDTO);
+                return RedirectToAction("Index");
 
+            }
             await _orderService.Create(orderDTO);
             return RedirectToAction("Index");
         }

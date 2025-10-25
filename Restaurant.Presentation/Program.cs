@@ -9,6 +9,7 @@ using Restaurant.Application.Services.OrderServices;
 using Restaurant.Context;
 using Restaurant.Infrastructure;
 using Restaurant.Models;
+using Restaurant.Presentation.Middlewares;
 using System;
 
 namespace Restaurant.Presentation
@@ -19,8 +20,7 @@ namespace Restaurant.Presentation
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            // Add services to the container.
+           
             //builder.Services.AddDbContext()
             var conn = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<RestaurantDbContext>(options =>
@@ -39,11 +39,10 @@ namespace Restaurant.Presentation
             //    options.User.RequireUniqueEmail = builder.Configuration.GetValue<bool>("PasswordRequirements:RequireUniqueEmail");
 
             //})
-                    
-
             //.AddRoles<IdentityRole>()
             //.AddEntityFrameworkStores<RestaurantDbContext>();
 
+            // Add services to the container.
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IMenuCategoryService, MenuCategoryService>();
             builder.Services.AddScoped<IMenuItemService, MenuItemService>();
@@ -66,15 +65,17 @@ namespace Restaurant.Presentation
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
             app.UseRouting();
-          
+            app.UseMiddleware<Totalpudgetof_mounth>();
+          //  app.UseMiddleware<TimeOut>();
 
-            app.UseAuthentication();  // 👈 أضف السطر ده قبل Authorization
+
+            app.UseAuthentication();  
            
 
 
