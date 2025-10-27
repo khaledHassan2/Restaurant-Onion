@@ -44,7 +44,7 @@ namespace Restaurant.Presentation.Controllers
             }
 
             TempData["SuccessMessage"] = result.Message;
-            return RedirectToAction("Cart");
+            return RedirectToAction("Index","Home");
         }
 
         public async Task<IActionResult> Cart()

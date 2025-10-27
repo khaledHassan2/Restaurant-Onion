@@ -1,14 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Restaurant.Models
 {
     public class OrderItem : ModelBase
     {
         public int OrderId { get; set; }
+        [JsonIgnore]
+        [System.Runtime.Serialization.IgnoreDataMember]
         public Order Order { get; set; }
 
         public int MenuItemId { get; set; }
+        [JsonIgnore]
         public MenuItem MenuItem { get; set; }
 
         [Range(1, int.MaxValue)]

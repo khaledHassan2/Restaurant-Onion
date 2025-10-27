@@ -2,7 +2,15 @@
 namespace Restaurant.Models
 {
     public enum OrderType { DineIn, Takeout, Delivery }
-    public enum OrderStatus { Pending, Preparing, Ready, Delivered, Cancelled }
+    public enum OrderStatus
+    {
+        Pending,      // الـ Cart
+        Confirmed,    // بعد الـ Checkout
+        Processing,
+        Ready,
+        Delivered,
+        Cancelled
+    }
 
     public class Order : ModelBase
     {

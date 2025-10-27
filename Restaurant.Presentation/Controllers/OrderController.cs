@@ -33,37 +33,6 @@ namespace Restaurant.Presentation.Controllers
             return View(orders);
         }
 
-        public async Task<IActionResult> Create()
-        {
-
-            var currentHour = DateTime.Now.Hour;
-            if (currentHour >= 15 && currentHour < 17)
-            {
-                ViewBag.HappyHourMessage = "Happy Hour! Get 20% off your order (3 PM - 5 PM)";
-            }
-            var items= await _menuItemService.GetAll();
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(CreateOrderDTO orderDTO)
-        {
-            if (!ModelState.IsValid || orderDTO == null)
-                return View(orderDTO);
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            orderDTO.CustomerId = userId;
-            var currentHour = DateTime.Now.Hour;
-            if (currentHour >= 15 && currentHour < 17)
-            {
-                orderDTO.Discount = (orderDTO.Discount) - (orderDTO.Discount * 20/100);
-                await _orderService.Create(orderDTO);
-                return RedirectToAction("Index");
-
-            }
-            await _orderService.Create(orderDTO);
-            return RedirectToAction("Index");
-        }
-
         public async Task<IActionResult> Update(int id)
         {
             var order = await _orderService.GetById(id);
@@ -80,13 +49,75 @@ namespace Restaurant.Presentation.Controllers
             await _orderService.Update(orderDTO);
             return RedirectToAction("Index");
         }
+        public async Task<IActionResult> Details(int id)
+        {
+            var order = await _orderService.GetById(id);
 
+            if (order == null)
+            {
+                TempData["ErrorMessage"] = "Order not found.";
+                return RedirectToAction("Index");
+            }
+
+            var orderdto = order.Adapt<CreateOrderDTO>();
+            return View(orderdto);
+        }
         public async Task<IActionResult> Delete(int id)
         {
             await _orderService.Delete(id);
             return RedirectToAction("Index");
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> Checkout()
+        //{
+        //    var customerId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        //    if (string.IsNullOrEmpty(customerId))
+        //    {
+        //        TempData["ErrorMessage"] = "Please log in to checkout.";
+        //        return RedirectToAction("Login", "Account");
+        //    }
+
+        //    // جلب الـCart الحالي (Status = Pending)
+        //    var cart = await _orderService.GetPendingOrderWithItemsAsync(customerId);
+
+        //    if (cart == null || cart.Items == null || !cart.Items.Any())
+        //    {
+        //        TempData["InfoMessage"] = "Your cart is empty.";
+        //        return RedirectToAction("Index");
+        //    }
+
+        //    // إنشاء Order جديد
+        //    var newOrder = new Order
+        //    {
+        //        CustomerId = customerId,
+        //        Status = OrderStatus.Ready, // أو Pending لو عايز تاكد الدفع بعدين
+        //        Type = cart.Type,
+        //        Discount = cart.Discount,
+        //        TaxPercent = cart.TaxPercent,
+        //        DeliveryAddress = cart.DeliveryAddress,
+        //        LastStatusChange = DateTime.Now
+        //    };
+
+        //    await _orderService.Create(newOrder);
+
+        //    // نسخ العناصر من الكارت إلى الـOrder الجديد
+        //    newOrder.Items = cart.Items.Select(i => new OrderItem
+        //    {
+        //        MenuItemId = i.MenuItemId,
+        //        Quantity = i.Quantity,
+        //        UnitPrice = i.UnitPrice,
+        //        OrderId = newOrder.Id
+        //    }).ToList();
+
+        //    await _orderService.Update(newOrder);
+
+        //    // مسح الكارت الحالي بعد الشيك اوت
+        //    //await _orderService.ClearCart(customerId); // تأكد ان عندك method دي
+
+        //    TempData["SuccessMessage"] = "Checkout successful! Your cart is now empty.";
+        //    return RedirectToAction("Index");
+        //}
         [HttpPost]
         public async Task<IActionResult> Checkout()
         {
@@ -97,45 +128,44 @@ namespace Restaurant.Presentation.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // جلب الـCart الحالي (Status = Pending)
-            var cart = await _orderService.GetPendingOrderWithItemsAsync(customerId);
+            // جلب الـ Pending Cart الحالي
+            var pendingCart = await _orderService.GetPendingOrderWithItemsAsync(customerId);
 
-            if (cart == null || cart.Items == null || !cart.Items.Any())
+            if (pendingCart == null || pendingCart.Items == null || !pendingCart.Items.Any())
             {
                 TempData["InfoMessage"] = "Your cart is empty.";
+                return RedirectToAction("Cart", "OrderItem");
+            }
+
+            // تحديث حالة الـ Order من Pending إلى Confirmed
+            pendingCart.Status = OrderStatus.Confirmed;
+            pendingCart.LastStatusChange = DateTime.Now;
+
+            // تطبيق الخصم إذا كان في Happy Hour
+            var currentHour = DateTime.Now.Hour;
+            if (currentHour >= 15 && currentHour < 17)
+            {
+                pendingCart.Discount = pendingCart.Discount - (pendingCart.Discount * 20 / 100);
+            }
+
+            // حفظ التحديثات
+            await _orderService.Update(pendingCart);
+
+            TempData["SuccessMessage"] = $"Order #{pendingCart.Id} confirmed successfully! Your cart is now cleared.";
+            return RedirectToAction("OrderConfirmation", new { orderId = pendingCart.Id });
+        }
+
+        // صفحة تأكيد الطلب (اختياري)
+        public async Task<IActionResult> OrderConfirmation(int orderId)
+        {
+            var order = await _orderService.GetById(orderId);
+            if (order == null)
+            {
+                TempData["ErrorMessage"] = "Order not found.";
                 return RedirectToAction("Index");
             }
 
-            // إنشاء Order جديد
-            var newOrder = new Order
-            {
-                CustomerId = customerId,
-                Status = OrderStatus.Ready, // أو Pending لو عايز تاكد الدفع بعدين
-                Type = cart.Type,
-                Discount = cart.Discount,
-                TaxPercent = cart.TaxPercent,
-                DeliveryAddress = cart.DeliveryAddress,
-                LastStatusChange = DateTime.Now
-            };
-
-            await _orderService.Create(newOrder);
-
-            // نسخ العناصر من الكارت إلى الـOrder الجديد
-            newOrder.Items = cart.Items.Select(i => new OrderItem
-            {
-                MenuItemId = i.MenuItemId,
-                Quantity = i.Quantity,
-                UnitPrice = i.UnitPrice,
-                OrderId = newOrder.Id
-            }).ToList();
-
-            await _orderService.Update(newOrder);
-
-            // مسح الكارت الحالي بعد الشيك اوت
-            //await _orderService.ClearCart(customerId); // تأكد ان عندك method دي
-
-            TempData["SuccessMessage"] = "Checkout successful! Your cart is now empty.";
-            return RedirectToAction("Index");
+            return View(order);
         }
 
     }

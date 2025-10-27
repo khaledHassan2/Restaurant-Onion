@@ -41,20 +41,22 @@ namespace Restaurant.Infrastructure
         // ✅ غير async لأننا مش محتاجين await هنا
         public IQueryable<T> GetAll()
         {
-            return _dbSet.Where(e => !e.IsDeleted);
+            return _dbSet;
         }
 
-        public async Task<T> GetById(int id, Func<IQueryable<T>, IQueryable<T>> include = null)
+        public async Task<T?> GetById(int id, Func<IQueryable<T>, IQueryable<T>>? include = null)
         {
-            IQueryable<T> query = _dbSet;
+            IQueryable<T> query = _dbSet.AsQueryable();
 
             if (include != null)
                 query = include(query);
 
+            // نحاول نجيب الـ entity حسب خاصية Id
             return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
         }
 
-       
+
+
         public async Task<Order?> GetPendingOrderWithItemsAsync(string customerId)
         {
             return await _context.Orders

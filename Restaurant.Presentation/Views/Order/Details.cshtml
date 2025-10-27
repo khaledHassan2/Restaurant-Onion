@@ -1,0 +1,552 @@
+﻿@using Restaurant.DTOs.OrderDTOs
+@using Restaurant.Models
+@model CreateOrderDTO
+
+@{
+    ViewData["Title"] = $"Order Details #{Model.Id}";
+}
+
+<style>
+    :root {
+        --primary: #2c3e50;
+        --success: #27ae60;
+        --danger: #e74c3c;
+        --info: #3498db;
+        --warning: #f39c12;
+        --light: #ecf0f1;
+        --dark: #2c3e50;
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+
+    /* Header */
+    .details-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .details-header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+    .header-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-back {
+        background: #95a5a6;
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .btn-back:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .btn-edit {
+        background: linear-gradient(135deg, var(--info) 0%, #2980b9 100%);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            color: white;
+        }
+
+    /* Main Container */
+    .details-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Card */
+    .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+    }
+
+    .card-title {
+        color: var(--primary);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--light);
+    }
+
+    /* Info Grid */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-item {
+        background: linear-gradient(135deg, #f8f9fa 0%, #f0f3f7 100%);
+        padding: 1.2rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--info);
+    }
+
+    .info-label {
+        color: #95a5a6;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-value {
+        color: var(--primary);
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    /* Status Badge */
+    .status-badge {
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        border-radius: 20px;
+        font-weight: 700;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, var(--warning) 0%, #e67e22 100%);
+    }
+
+    .status-confirmed {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+
+    .status-ready {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+    }
+
+    .status-delivered {
+        background: linear-gradient(135deg, var(--success) 0%, #229954 100%);
+    }
+
+    .status-cancelled {
+        background: linear-gradient(135deg, var(--danger) 0%, #c0392b 100%);
+    }
+
+    /* Items Table */
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.5rem;
+    }
+
+        .items-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+            .items-table thead th {
+                padding: 1rem;
+                text-align: left;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-size: 0.9rem;
+            }
+
+        .items-table tbody tr {
+            border-bottom: 1px solid var(--light);
+            transition: all 0.3s ease;
+        }
+
+            .items-table tbody tr:hover {
+                background: #f8f9fa;
+            }
+
+        .items-table tbody td {
+            padding: 1rem;
+            color: var(--primary);
+        }
+
+    .item-name {
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .item-price {
+        color: var(--success);
+        font-weight: 600;
+    }
+
+    .item-total {
+        color: #667eea;
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+
+    /* Summary Box */
+    .summary-box {
+        background: linear-gradient(135deg, #f8f9fa 0%, #f0f3f7 100%);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--light);
+        color: var(--primary);
+    }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            padding-top: 1rem;
+            border-top: 2px solid var(--danger);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #667eea;
+        }
+
+    .summary-label {
+        font-weight: 600;
+        color: #7f8c8d;
+    }
+
+    .summary-value {
+        font-weight: 700;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .sidebar-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+    }
+
+        .sidebar-card h5 {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--light);
+    }
+
+        .sidebar-item:last-child {
+            border-bottom: none;
+        }
+
+    .sidebar-item-label {
+        color: #95a5a6;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .sidebar-item-value {
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .badge-icon {
+        font-size: 1.5rem;
+    }
+
+    /* Empty State */
+    .empty-items {
+        text-align: center;
+        padding: 2rem;
+        color: #95a5a6;
+    }
+
+    .empty-items-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #bdc3c7;
+    }
+
+    /* Responsive */
+    @@media (max-width: 1024px) {
+        .details-container
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .details-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+        .header-actions a {
+            flex: 1;
+        }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .details-header
+
+    {
+        padding: 1rem;
+    }
+
+    .details-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+    }
+
+    .items-table thead th,
+    .items-table tbody td {
+        padding: 0.8rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    }
+</style>
+
+<div class="details-header">
+    <h1>📦 Order #@Model.Id</h1>
+    <div class="header-actions">
+        <a href="@Url.Action("Index", "Order")" class="btn-back">← Back to Orders</a>
+        <a href="@Url.Action("Update", "Order", new { id = Model.Id })" class="btn-edit">✏️ Edit Order</a>
+    </div>
+</div>
+
+<div class="details-container">
+    <!-- Main Content -->
+    <div>
+        <!-- Order Information -->
+        <div class="card">
+            <div class="card-title">
+                <span>ℹ️</span> Order Information
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Order ID</div>
+                    <div class="info-value">#@Model.Id</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Customer</div>
+                    <div class="info-value">@(Model.CustomerUserName ?? "N/A")</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Order Type</div>
+                    <div class="info-value">@Model.Type</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Status</div>
+                    @{
+                        string statusClass = Model.Status switch
+                        {
+                            OrderStatus.Pending => "status-pending",
+                            OrderStatus.Confirmed => "status-confirmed",
+                            OrderStatus.Ready => "status-ready",
+                            OrderStatus.Delivered => "status-delivered",
+                            OrderStatus.Cancelled => "status-cancelled",
+                            _ => "status-pending"
+                        };
+                    }
+                    <span class="status-badge @statusClass">@Model.Status</span>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Order Date</div>
+                    <div class="info-value">@(Model.LastStatusChange?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.DeliveryAddress))
+                {
+                    <div class="info-item">
+                        <div class="info-label">Delivery Address</div>
+                        <div class="info-value" style="font-size: 1rem;">@Model.DeliveryAddress</div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="card">
+            <div class="card-title">
+                <span>📋</span> Order Items
+            </div>
+
+            @if (Model.Items != null && Model.Items.Any())
+            {
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="item-name">@item.MenuItemName</td>
+                                <td>@item.Quantity</td>
+                                <td class="item-price">@item.UnitPrice.ToString("C")</td>
+                                <td class="item-total">@(item.Quantity* item.UnitPrice).ToString("C")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-items">
+                    <div class="empty-items-icon">📭</div>
+                    <p>No items in this order</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Order Summary -->
+        <div class="sidebar-card">
+            <h5>💰 Order Summary</h5>
+            <div class="summary-box">
+                @{
+                    decimal subtotal = Model.Items?.Sum(i => i.UnitPrice * i.Quantity) ?? 0;
+                    decimal tax = subtotal * (Model.TaxPercent / 100m);
+                    decimal grandTotal = subtotal + tax - Model.Discount;
+                }
+                <div class="summary-row">
+                    <span class="summary-label">Subtotal:</span>
+                    <span class="summary-value">@subtotal.ToString("C")</span>
+                </div>
+                @if (Model.TaxPercent > 0)
+                {
+                    <div class="summary-row">
+                        <span class="summary-label">Tax (@Model.TaxPercent%):</span>
+                        <span class="summary-value">@tax.ToString("C")</span>
+                    </div>
+                }
+                @if (Model.Discount > 0)
+                {
+                    <div class="summary-row" style="color: var(--success);">
+                        <span class="summary-label">Discount:</span>
+                        <span class="summary-value">-@Model.Discount.ToString("C")</span>
+                    </div>
+                }
+                <div class="summary-row">
+                    <span class="summary-label">Grand Total:</span>
+                    <span class="summary-value">@grandTotal.ToString("C")</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="sidebar-card">
+            <h5>📊 Quick Stats</h5>
+            <div class="sidebar-item">
+                <span class="badge-icon">📦</span>
+                <div style="flex: 1;">
+                    <div class="sidebar-item-label">Total Items</div>
+                    <div class="sidebar-item-value">@(Model.Items?.Count ?? 0)</div>
+                </div>
+            </div>
+            <div class="sidebar-item">
+                <span class="badge-icon">💵</span>
+                <div style="flex: 1;">
+                    <div class="sidebar-item-label">Total Amount</div>
+                    <div class="sidebar-item-value">
+                        @{
+                            decimal sTotal = Model.Items?.Sum(i => i.UnitPrice * i.Quantity) ?? 0;
+                            decimal sTax = sTotal * (Model.TaxPercent / 100m);
+                            decimal sGrandTotal = sTotal + sTax - Model.Discount;
+                        }
+                        @sGrandTotal.ToString("C")
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-item">
+                <span class="badge-icon">📅</span>
+                <div style="flex: 1;">
+                    <div class="sidebar-item-label">Order Date</div>
+                    <div class="sidebar-item-value">@(Model.LastStatusChange?.ToString("dd/MM") ?? "N/A")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
