@@ -1,302 +1,77 @@
-﻿
-@model Restaurant.Models.Order
+﻿@model IEnumerable<Restaurant.Models.Order>
 @{
-    ViewData["Title"] = $"Order Confirmation #{Model.Id}";
+    ViewData["Title"] = "My Orders";
+    Layout = "_Layout";
 }
 
-<style>
-    .confirmation-container {
-        padding: 2rem 0;
-    }
+<div class="container mt-5">
+    <h2 class="fw-bold text-center mb-4">🧾 My Orders</h2>
 
-    .confirmation-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        padding: 3rem 2rem;
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-
-    .success-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-        color: #27ae60;
-    }
-
-    .confirmation-card h2 {
-        color: #27ae60;
-        font-size: 1.8rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .order-number {
-        color: #2c3e50;
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 2rem;
-    }
-
-    .confirmation-details {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        text-align: left;
-    }
-
-    .detail-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.8rem 0;
-        border-bottom: 1px solid #e0e0e0;
-        color: #2c3e50;
-    }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-    .detail-label {
-        font-weight: 600;
-        color: #555;
-    }
-
-    .detail-value {
-        font-weight: 600;
-        color: #2c3e50;
-    }
-
-    .items-section {
-        background: white;
-        border-radius: 8px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        border: 1px solid #ecf0f1;
-    }
-
-        .items-section h4 {
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            font-weight: 700;
-        }
-
-    .items-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 1rem;
-    }
-
-        .items-table thead {
-            background: #f8f9fa;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .items-table th {
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .items-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #ecf0f1;
-            color: #555;
-        }
-
-    .item-name {
-        font-weight: 600;
-        color: #2c3e50;
-    }
-
-    .item-price {
-        color: #27ae60;
-        font-weight: 600;
-    }
-
-    .summary-section {
-        background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.6rem 0;
-        color: #2c3e50;
-    }
-
-        .summary-row.total {
-            border-top: 2px solid #e74c3c;
-            padding-top: 1rem;
-            margin-top: 1rem;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: #27ae60;
-        }
-
-    .action-buttons {
-        display: flex;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-
-    .btn-primary {
-        flex: 1;
-        padding: 1rem 2rem;
-        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-    }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
-        }
-
-    .btn-secondary {
-        flex: 1;
-        padding: 1rem 2rem;
-        background: white;
-        color: #95a5a6;
-        border: 2px solid #95a5a6;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-    }
-
-        .btn-secondary:hover {
-            background: #95a5a6;
-            color: white;
-        }
-
-    @@media (max-width: 768px) {
-        .confirmation-card {
-            padding: 2rem 1rem;
-        }
-
-        .action-buttons {
-            flex-direction: column;
-        }
-
-        .detail-row {
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .items-table th,
-        .items-table td {
-            padding: 0.75rem;
-            font-size: 0.9rem;
-        }
-    }
-</style>
-
-<div class="confirmation-container">
-    <div class="confirmation-card">
-        <div class="success-icon">✓</div>
-        <h2>Order Confirmed!</h2>
-        <p style="color: #7f8c8d; margin-bottom: 2rem;">Thank you for your order. Your meal is being prepared.</p>
-        <div class="order-number">Order #@Model.Id</div>
-    </div>
-
-    <!-- Order Details -->
-    <div class="confirmation-details">
-        <div class="detail-row">
-            <span class="detail-label">Order Date:</span>
-            <span class="detail-value">@(Model.LastStatusChange) </span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Order Status:</span>
-            <span class="detail-value" style="color: #27ae60;">@Model.Status</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Order Type:</span>
-            <span class="detail-value">@Model.Type</span>
-        </div>
-        @if (!string.IsNullOrEmpty(Model.DeliveryAddress))
-        {
-            <div class="detail-row">
-                <span class="detail-label">Delivery Address:</span>
-                <span class="detail-value">@Model.DeliveryAddress</span>
-            </div>
-        }
-    </div>
-
-    <!-- Order Items -->
-    @if (Model.Items != null && Model.Items.Any())
+    @if (TempData["InfoMessage"] != null)
     {
-        <div class="items-section">
-            <h4>Order Items</h4>
-            <table class="items-table">
-                <thead>
+        <div class="alert alert-info text-center">@TempData["InfoMessage"]</div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success text-center">@TempData["SuccessMessage"]</div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive shadow-sm rounded-3">
+            <table class="table table-hover align-middle">
+                <thead class="table-primary">
                     <tr>
-                        <th>Item Name</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
+                        <th>#</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>Discount</th>
+                        <th>Tax %</th>
+                        <th>Total Items</th>
+                        <th>Last Update</th>
+                        <th>Details</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Items)
+                    @foreach (var order in Model)
                     {
+                        string statusColor = order.Status switch
+                        {
+                            Restaurant.Models.OrderStatus.Pending => "warning",
+                            Restaurant.Models.OrderStatus.Confirmed => "info",
+                            Restaurant.Models.OrderStatus.Ready => "primary",
+                            Restaurant.Models.OrderStatus.Delivered => "success",
+                            Restaurant.Models.OrderStatus.Cancelled => "danger",
+                            _ => "secondary"
+                        };
+
                         <tr>
-                            <td class="item-name">@item.MenuItem?.Name</td>
-                            <td>@item.Quantity</td>
-                            <td class="item-price">@item.UnitPrice.ToString("C")</td>
-                            <td class="item-price">@(item.UnitPrice* item.Quantity).ToString("C")</td>
+                            <td>@order.Id</td>
+                            <td>
+                                <span class="badge bg-@statusColor px-3 py-2">@order.Status</span>
+                            </td>
+                            <td>@order.Type</td>
+                            <td>@order.Discount.ToString("0.00")</td>
+                            <td>@order.TaxPercent %</td>
+                            <td>@(order.Items?.Count() ?? 0)</td>
+                            <td>@order.LastStatusChange</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-primary btn-sm">
+                                    <i class="fa fa-eye me-1"></i> View
+                                </a>
+                            </td>
                         </tr>
                     }
                 </tbody>
             </table>
-
-            <!-- Summary -->
-            <div class="summary-section">
-                <div class="summary-row">
-                    <span>Subtotal:</span>
-                    <span>@Model.Items.Sum(i => i.UnitPrice * i.Quantity).ToString("C")</span>
-                </div>
-                @if (Model.TaxPercent > 0)
-                {
-                    <div class="summary-row">
-                        <span>Tax (@Model.TaxPercent%):</span>
-                        <span>@((Model.Items.Sum(i => i.UnitPrice * i.Quantity) * Model.TaxPercent / 100)).ToString("C")</span>
-                    </div>
-                }
-                @if (Model.Discount > 0)
-                {
-                    <div class="summary-row" style="color: #27ae60;">
-                        <span>Discount:</span>
-                        <span>-@Model.Discount.ToString("C")</span>
-                    </div>
-                }
-                <div class="summary-row total">
-                    <span>Grand Total:</span>
-                    <span>@((Model.Items.Sum(i => i.UnitPrice * i.Quantity) + (Model.Items.Sum(i => i.UnitPrice * i.Quantity) * Model.TaxPercent / 100) - Model.Discount)).ToString("C")</span>
-                </div>
-            </div>
         </div>
     }
-
-    <!-- Action Buttons -->
-    <div class="action-buttons">
-        <a href="@Url.Action("Index", "Order")" class="btn-primary">View All Orders</a>
-        <a href="@Url.Action("Index", "MenuItem")" class="btn-secondary">Continue Shopping</a>
-    </div>
+    else
+    {
+        <div class="text-center text-muted mt-4">
+            <i class="fa fa-box-open fa-3x mb-3 text-secondary"></i>
+            <p>No orders found.</p>
+        </div>
+    }
 </div>

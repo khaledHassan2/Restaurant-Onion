@@ -1,0 +1,760 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Restaurant Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --sidebar-width: 280px;
+            --topbar-height: 70px;
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --dark-bg: #1e293b;
+            --darker-bg: #0f172a;
+            --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--sidebar-bg);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+            .sidebar::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .sidebar::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .sidebar::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+            }
+
+            .sidebar.collapsed {
+                width: 80px;
+            }
+
+        /* Logo Section */
+        .sidebar-logo {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .logo-text {
+            font-size: 1.2rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Sidebar Menu */
+        .sidebar-menu {
+            padding: 1.5rem 0;
+        }
+
+        .menu-section {
+            margin-bottom: 2rem;
+        }
+
+        .menu-title {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .menu-title {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            position: relative;
+            margin-bottom: 0.3rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.9rem 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .menu-link::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                width: 4px;
+                background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+                transform: scaleY(0);
+                transition: transform 0.3s ease;
+            }
+
+            .menu-link:hover,
+            .menu-link.active {
+                background: rgba(99, 102, 241, 0.1);
+                color: var(--primary-color);
+            }
+
+                .menu-link:hover::before,
+                .menu-link.active::before {
+                    transform: scaleY(1);
+                }
+
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .menu-icon {
+            margin-right: 0;
+        }
+
+        .menu-text {
+            flex: 1;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .menu-badge {
+            background: var(--danger-color);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .sidebar.collapsed .menu-badge {
+            display: none;
+        }
+
+        /* Topbar */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: var(--topbar-height);
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .topbar {
+            left: 80px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-toggle {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .menu-toggle:hover {
+                transform: scale(1.05);
+                box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3);
+            }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 0.7rem 1.2rem;
+            width: 350px;
+            transition: all 0.3s ease;
+        }
+
+            .search-bar:focus-within {
+                background: white;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .search-bar input {
+                border: none;
+                background: transparent;
+                outline: none;
+                width: 100%;
+                margin-left: 0.5rem;
+                color: var(--dark-bg);
+            }
+
+            .search-bar i {
+                color: var(--text-muted);
+            }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .topbar-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: #f1f5f9;
+            border: none;
+            color: var(--dark-bg);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+            .topbar-icon:hover {
+                background: var(--primary-color);
+                color: white;
+                transform: translateY(-2px);
+            }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger-color);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border: 2px solid white;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            background: #f1f5f9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .admin-profile:hover {
+                background: var(--primary-color);
+                color: white;
+            }
+
+        .admin-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .admin-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            line-height: 1.2;
+        }
+
+        .admin-role {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .admin-profile:hover .admin-role {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--topbar-height);
+            padding: 2rem;
+            min-height: calc(100vh - var(--topbar-height));
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .main-wrapper .main-content {
+            margin-left: 80px;
+        }
+
+        .content-container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @@keyframes fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-bg);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+            .breadcrumb-link:hover {
+                color: var(--secondary-color);
+            }
+
+        /* Footer */
+        .dashboard-footer {
+            background: white;
+            padding: 1.5rem 2rem;
+            margin-left: var(--sidebar-width);
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .main-wrapper .dashboard-footer {
+            margin-left: 80px;
+        }
+
+        .dashboard-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+            .dashboard-footer a:hover {
+                color: var(--secondary-color);
+            }
+
+        /* Responsive */
+        @@media (max-width: 992px) {
+            .sidebar
+
+        {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .topbar {
+            left: 0 !important;
+        }
+
+        .main-content,
+        .dashboard-footer {
+            margin-left: 0 !important;
+        }
+
+        .search-bar {
+            width: 200px;
+        }
+
+        .admin-info {
+            display: none;
+        }
+
+        }
+
+        @@media (max-width: 576px) {
+            .topbar
+
+        {
+            padding: 0 1rem;
+        }
+
+        .search-bar {
+            display: none;
+        }
+
+        .topbar-right {
+            gap: 0.5rem;
+        }
+
+        .main-content {
+            padding: 1rem;
+        }
+
+        .content-container {
+            padding: 1.5rem;
+        }
+
+        }
+
+        /* Mobile Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+        /* Logout Button in Sidebar */
+        .sidebar-logout {
+            margin-top: 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .btn-logout-sidebar {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            border: none;
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+            .btn-logout-sidebar:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(239, 68, 68, 0.3);
+            }
+
+        .sidebar.collapsed .btn-logout-sidebar {
+            padding: 0.9rem 0.5rem;
+        }
+
+            .sidebar.collapsed .btn-logout-sidebar span {
+                display: none;
+            }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <i class="fas fa-utensils logo-icon"></i>
+            <h2 class="logo-text">Restaurant</h2>
+        </div>
+
+        <nav class="sidebar-menu">
+            <div class="menu-section">
+                <div class="menu-title">Main Menu</div>
+                <div class="menu-item">
+                    <a  class="menu-link active" asp-area="" asp-controller="Home" asp-action="Index">
+                        <span class="menu-icon"><i class="fas fa-home"></i></span>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a  class="menu-link" asp-area="" asp-controller="Analytics" asp-action="Index">
+                        <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                        <span class="menu-text">Analytics</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-title">Management</div>
+                <div class="menu-item">
+                    <a class="menu-link" asp-area="" asp-controller="MenuCategory" asp-action="Index">
+                        <span class="menu-icon"><i class="fas fa-list"></i></span>
+                        <span class="menu-text">Categories</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a  class="menu-link" asp-area="" asp-controller="MenuItem" asp-action="Index">
+                        <span class="menu-icon"><i class="fas fa-pizza-slice"></i></span>
+                        <span class="menu-text">Menu Items</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a  class="menu-link" asp-area="" asp-controller="Order" asp-action="Index">
+                        <span class="menu-icon"><i class="fas fa-shopping-bag"></i></span>
+                        <span class="menu-text">Orders</span>
+                        <span class="menu-badge">12</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a  class="menu-link" asp-area="" asp-controller="OrderItem" asp-action="Cart">
+                        <span class="menu-icon"><i class="fas fa-shopping-cart"></i></span>
+                        <span class="menu-text">Cart</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-title">Settings</div>
+                <div class="menu-item">
+                    <a  class="menu-link" asp-area="" asp-controller="Users" asp-action="Index">
+                        <span class="menu-icon"><i class="fas fa-users"></i></span>
+                        <span class="menu-text">Users</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a  class="menu-link" asp-area="" asp-controller="Settings" asp-action="Index">
+                        <span class="menu-icon"><i class="fas fa-cog"></i></span>
+                        <span class="menu-text">Settings</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a  class="menu-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                        <span class="menu-icon"><i class="fas fa-shield-alt"></i></span>
+                        <span class="menu-text">Privacy</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="sidebar-logout">
+            <button class="btn-logout-sidebar" onclick="location.href='@Url.Action("LogOut", "Account")'">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search anything...">
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            <button class="topbar-icon">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">5</span>
+            </button>
+            <button class="topbar-icon">
+                <i class="fas fa-envelope"></i>
+                <span class="notification-badge">3</span>
+            </button>
+            <div class="admin-profile">
+                <div class="admin-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="admin-info">
+                    <div class="admin-name">@User.Identity?.Name</div>
+                    <div class="admin-role">
+                        @(User.IsInRole("Admin") ? "Administrator" : "User")
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div class="content-container">
+                @RenderBody()
+            </div>
+        </main>
+
+        <footer class="dashboard-footer">
+            <p>
+                &copy; 2025 Restaurant Admin Dashboard. All rights reserved. |
+                <a  asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a> |
+                <a  asp-area="" asp-controller="Home" asp-action="Terms">Terms of Service</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle Sidebar
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        menuToggle.addEventListener('click', function() {
+            if (window.innerWidth > 992) {
+                sidebar.classList.toggle('collapsed');
+            } else {
+                sidebar.classList.toggle('show');
+                sidebarOverlay.classList.toggle('show');
+            }
+        });
+
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('show');
+            sidebarOverlay.classList.remove('show');
+        });
+
+        // Active Menu Link
+        const menuLinks = document.querySelectorAll('.menu-link');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                menuLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Responsive Sidebar
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

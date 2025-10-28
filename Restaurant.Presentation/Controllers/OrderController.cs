@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Restaurant.Presentation.Controllers
 {
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
@@ -155,18 +156,30 @@ namespace Restaurant.Presentation.Controllers
             return RedirectToAction("OrderConfirmation", new { orderId = pendingCart.Id });
         }
 
-        // صفحة تأكيد الطلب (اختياري)
-        public async Task<IActionResult> OrderConfirmation(int orderId)
+
+        public async Task<IActionResult> OrderConfirmation()
         {
-            var order = await _orderService.GetById(orderId);
-            if (order == null)
+            var customerId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(customerId))
             {
-                TempData["ErrorMessage"] = "Order not found.";
-                return RedirectToAction("Index");
+                TempData["ErrorMessage"] = "Please log in to view your orders.";
+                return RedirectToAction("Login", "Account");
             }
 
-            return View(order);
+            var orders = await _orderService.GetAll();
+            var userOrders = orders.Where(o => o.CustomerId == customerId)
+                                   .OrderByDescending(o => o.LastStatusChange)
+                                   .ToList();
+
+            if (!userOrders.Any())
+            {
+                TempData["InfoMessage"] = "You have no orders yet.";
+            }
+
+            return View(userOrders);
         }
+
 
     }
 }
